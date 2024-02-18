@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewEncapsulation } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
 import { UploadEvent } from 'primeng/fileupload';
 
@@ -6,11 +6,16 @@ import { UploadEvent } from 'primeng/fileupload';
   selector: 'app-upload-file',
   templateUrl: './upload-file.component.html',
   styleUrl: './upload-file.component.css',
+  encapsulation: ViewEncapsulation.None,
 })
 export class UploadFileComponent {
   uploadedFiles: any[] = [];
   items: MenuItem[];
-
+  documents: any[] = [];
+  // docUrl: string =
+  //   'https://docs.google.com/document/d/1tdzZ4Fz1OtA46J8yNC_ZaBUPw_WnoDuH/edit?usp=sharing&ouid=102857697093579477882&rtpof=true&sd=true';
+  // pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
+  pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
   constructor(private messageService: MessageService) {
     this.items = [
       {
@@ -27,6 +32,14 @@ export class UploadFileComponent {
         label: 'Installation',
         icon: 'pi pi-cog',
         routerLink: ['/installation'],
+      },
+    ];
+    this.documents = [
+      {
+        name: 'Receipt 1',
+      },
+      {
+        name: 'Receipt 2',
       },
     ];
   }

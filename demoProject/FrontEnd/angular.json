@@ -16,15 +16,15 @@
             "outputPath": "dist/front-end",
             "index": "src/index.html",
             "browser": "src/main.ts",
-            "polyfills": [
-              "zone.js"
-            ],
+            "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
+              "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
+              "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/tailwindcss/base.css",
+              "node_modules/tailwindcss/components.css",
+              "node_modules/tailwindcss/utilities.css",
               "src/styles.css"
             ],
             "scripts": []
@@ -74,16 +74,15 @@
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
           "options": {
-            "polyfills": [
-              "zone.js",
-              "zone.js/testing"
-            ],
+            "polyfills": ["zone.js", "zone.js/testing"],
             "tsConfig": "tsconfig.spec.json",
-            "assets": [
-              "src/favicon.ico",
-              "src/assets"
-            ],
+            "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
+              "node_modules/primeng/resources/themes/lara-light-blue/theme.css",
+              "node_modules/primeng/resources/primeng.min.css",
+              "node_modules/tailwindcss/base.css",
+              "node_modules/tailwindcss/components.css",
+              "node_modules/tailwindcss/utilities.css",
               "src/styles.css"
             ],
             "scripts": []

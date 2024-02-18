@@ -12,6 +12,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
 import { routes } from './app.routes';
 import { AppComponent } from './app.component';
+import { ButtonModule } from 'primeng/button';
+import { NgxDocViewerModule } from 'ngx-doc-viewer';
 
 @NgModule({
   declarations: [AppComponent, UploadFileComponent],
@@ -25,6 +27,8 @@ import { AppComponent } from './app.component';
     RouterModule.forRoot(routes),
     BrowserAnimationsModule,
     BrowserModule,
+    ButtonModule,
+    NgxDocViewerModule,
   ],
   providers: [MessageService],
   bootstrap: [AppComponent],
