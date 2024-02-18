@@ -1,3 +1,3 @@
 Java is used for Backend
 
-codeowners lavakush, chandrsekar
+codeowners lavakush, chandrasekhar anvesh(collaborator)
