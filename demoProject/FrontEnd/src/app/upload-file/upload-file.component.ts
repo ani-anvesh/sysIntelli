@@ -1,6 +1,7 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
 import { UploadEvent } from 'primeng/fileupload';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-upload-file',
@@ -16,7 +17,10 @@ export class UploadFileComponent {
   //   'https://docs.google.com/document/d/1tdzZ4Fz1OtA46J8yNC_ZaBUPw_WnoDuH/edit?usp=sharing&ouid=102857697093579477882&rtpof=true&sd=true';
   // pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
   pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
-  constructor(private messageService: MessageService) {
+  constructor(
+    private messageService: MessageService,
+    private ApiService: ApiService
+  ) {
     this.items = [
       {
         label: 'Update',
@@ -44,11 +48,18 @@ export class UploadFileComponent {
     ];
   }
 
-  onUpload(event: UploadEvent) {
+  onUpload(event: any) {
     // for (let file of event.files) {
     //   this.uploadedFiles.push(file);
     // }
-    console.log(event);
+    console.log(event.files);
+
+    this.ApiService.uploadFile(
+      'http://localhost:3000/api/receipt/upload',
+      event.files[0]
+    ).then((res: any) => {
+      console.log(res);
+    });
 
     this.messageService.add({
       severity: 'info',

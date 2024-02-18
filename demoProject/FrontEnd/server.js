@@ -4,6 +4,8 @@ var chalk = require("chalk");
 var figlet = require("figlet");
 var http = require("http");
 var https = require("https");
+const mysql = require("mysql2");
+var cors = require("cors");
 
 var options = {};
 
@@ -16,14 +18,11 @@ const APPLICATION_PORT = 3000;
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limmit: "50mb" }));
 // app.use(cookieParser())
-
+app.use(cors());
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-methods",
-    "POST, GET, OPTIONS, DELETE, PUT"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "*");
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-methods", "POST, GET, OPTIONS, DELETE, PUT");
+  res.header("Access-Control-Allow-Headers", "*");
   next();
 });
 
@@ -59,7 +58,7 @@ app.on("ready", function () {
   });
 });
 
-app.use("api/upload", require("./server/routes/upload.routes"));
+app.use("/api/receipt", require("./server/routes/upload.routes"));
 
 var server;
 if (process.argv.length == 2) {

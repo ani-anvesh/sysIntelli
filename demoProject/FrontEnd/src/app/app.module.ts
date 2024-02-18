@@ -14,6 +14,8 @@ import { routes } from './app.routes';
 import { AppComponent } from './app.component';
 import { ButtonModule } from 'primeng/button';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
+import { ApiService } from './services/api.service';
+import { AxiosService } from './services/axios.service';
 
 @NgModule({
   declarations: [AppComponent, UploadFileComponent],
@@ -30,7 +32,7 @@ import { NgxDocViewerModule } from 'ngx-doc-viewer';
     ButtonModule,
     NgxDocViewerModule,
   ],
-  providers: [MessageService],
+  providers: [MessageService, ApiService, AxiosService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
