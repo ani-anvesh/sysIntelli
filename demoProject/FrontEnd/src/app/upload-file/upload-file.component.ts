@@ -1,6 +1,5 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
-import { UploadEvent } from 'primeng/fileupload';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -24,19 +23,7 @@ export class UploadFileComponent implements OnInit {
   ) {
     this.items = [
       {
-        label: 'Update',
-        icon: 'pi pi-refresh',
-      },
-      {
-        label: 'Delete',
-        icon: 'pi pi-times',
-      },
-      { label: 'Angular.io', icon: 'pi pi-info', url: 'http://angular.io' },
-      { separator: true },
-      {
-        label: 'Installation',
-        icon: 'pi pi-cog',
-        routerLink: ['/installation'],
+        label: 'name',
       },
     ];
   }
