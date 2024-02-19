@@ -1,6 +1,3 @@
-<!-- <div class="card flex justify-content-center align-items-center">
-  
-</div> -->
 <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
   <div
     class="flex items-baseline justify-between border-b border-gray-200 pb-6 pt-12"
@@ -30,7 +27,11 @@
         >
           @for (doc of documents; track doc.name) {
           <li>
-            <a>{{ doc.name }}</a>
+            <a>{{
+              doc.vist_id.toString() +
+                doc.receipt_id.toString() +
+                doc.person_name
+            }}</a>
           </li>
           } @empty {
           <span>Empty list of users</span>
@@ -42,7 +43,7 @@
             mode="basic"
             chooseLabel="Upload"
             name="demo[]"
-            url="http://localhost:3000/api/receipt/upload"
+            url="http://localhost:3000/api/receiptUpload/upload"
             accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
             [maxFileSize]="1000000"
             (onUpload)="onUpload($event)"
@@ -51,33 +52,6 @@
         </div>
       </div>
       <div class="col-span-3">
-        <!-- <div
-          class="relative h-96 overflow-hidden rounded-xl border border-dashed border-gray-400 opacity-75 lg:h-full"
-        >
-          <svg
-            class="absolute inset-0 h-full w-full stroke-gray-900/10"
-            fill="none"
-          >
-            <defs>
-              <pattern
-                id="pattern-4d2f8758-2f66-4332-9b69-ca19e9dfc001"
-                x="0"
-                y="0"
-                width="10"
-                height="10"
-                patternUnits="userSpaceOnUse"
-              >
-                <path d="M-3 13 15-5M-5 5l18-18M-1 21 17 3"></path>
-              </pattern>
-            </defs>
-            <rect
-              stroke="none"
-              fill="url(#pattern-4d2f8758-2f66-4332-9b69-ca19e9dfc001)"
-              width="100%"
-              height="100%"
-            ></rect>
-          </svg>
-        </div> -->
         <ngx-doc-viewer
           [url]="pdfUrl"
           viewer="url"

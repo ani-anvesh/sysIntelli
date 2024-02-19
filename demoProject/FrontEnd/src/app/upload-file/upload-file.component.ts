@@ -1,4 +1,4 @@
-import { Component, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
 import { UploadEvent } from 'primeng/fileupload';
 import { ApiService } from '../services/api.service';
@@ -9,7 +9,7 @@ import { ApiService } from '../services/api.service';
   styleUrl: './upload-file.component.css',
   encapsulation: ViewEncapsulation.None,
 })
-export class UploadFileComponent {
+export class UploadFileComponent implements OnInit {
   uploadedFiles: any[] = [];
   items: MenuItem[];
   documents: any[] = [];
@@ -19,7 +19,7 @@ export class UploadFileComponent {
   pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
   constructor(
     private messageService: MessageService,
-    private ApiService: ApiService
+    private apiService: ApiService
   ) {
     this.items = [
       {
@@ -38,33 +38,58 @@ export class UploadFileComponent {
         routerLink: ['/installation'],
       },
     ];
-    this.documents = [
-      {
-        name: 'Receipt 1',
-      },
-      {
-        name: 'Receipt 2',
-      },
-    ];
+  }
+
+  fetchReceiptNames() {
+    this.apiService
+      .getAllData('http://localhost:3000/api/receiptFetch/fetch')
+      .then((res) => {
+        if (res) {
+          this.documents = res;
+          console.log('Receipt names fetched:', this.documents);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching receipt names:', error);
+      });
+  }
+
+  fetchReceipts(person_id: string, vist_id: string, receipt_id: string) {
+    this.apiService
+      .getAllData(
+        'http://localhost:3000/api/receiptCreate/create?person_id=' +
+          person_id +
+          '&vist_id=' +
+          vist_id +
+          '&receipt_id=' +
+          receipt_id
+      )
+      .then((res) => {
+        if (res) {
+          // this.documents = res;
+          console.log('Receipt names fetched:', this.documents);
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching receipt names:', error);
+      });
   }
 
   onUpload(event: any) {
-    // for (let file of event.files) {
-    //   this.uploadedFiles.push(file);
-    // }
-    console.log(event.files);
+    if (event && event.files && event.files[0]) {
+      this.messageService.add({
+        severity: 'info',
+        summary: 'File Uploaded',
+        detail: '',
+      });
+      this.fetchReceiptNames();
+    } else {
+      console.error('No file selected for upload.');
+    }
+  }
 
-    this.ApiService.uploadFile(
-      'http://localhost:3000/api/receipt/upload',
-      event.files[0]
-    ).then((res: any) => {
-      console.log(res);
-    });
-
-    this.messageService.add({
-      severity: 'info',
-      summary: 'File Uploaded',
-      detail: '',
-    });
+  ngOnInit() {
+    // this.fetchReceiptNames();
+    this.fetchReceipts('12220380', '1222038091', '1222038081');
   }
 }
