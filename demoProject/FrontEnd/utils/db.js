@@ -1,6 +1,6 @@
 exports.dbConfig = {
   host: "localhost",
   user: "root",
-  password: "rootroot",
+  password: "Chandra@3810",
   database: "sysintelli",
 };
