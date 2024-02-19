@@ -3,8 +3,6 @@ var app = express();
 var chalk = require("chalk");
 var figlet = require("figlet");
 var http = require("http");
-var https = require("https");
-const mysql = require("mysql2");
 var cors = require("cors");
 
 var options = {};
@@ -58,7 +56,9 @@ app.on("ready", function () {
   });
 });
 
-app.use("/api/receipt", require("./server/routes/upload.routes"));
+app.use("/api/receiptUpload", require("./server/routes/uploadReceipts.routes"));
+app.use("/api/receiptFetch", require("./server/routes/fetchReceipts.routes"));
+app.use("/api/receiptCreate", require("./server/routes/createReceipts.routes"));
 
 var server;
 if (process.argv.length == 2) {

@@ -3,6 +3,7 @@ const router = require("express").Router();
 var XLSX = require("xlsx");
 const _ = require("lodash");
 const mysql = require("mysql2/promise");
+const { dbConfig } = require("../../utils/db");
 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -14,13 +15,6 @@ const conversToArrayOfObjects = (dataArray) => {
     return _.zipObject(names, innerArray);
   });
   return mappedObjects;
-};
-
-const dbConfig = {
-  host: "localhost",
-  user: "root",
-  password: "rootroot",
-  database: "sysintelli",
 };
 
 async function saveDataToDatabase(data) {
@@ -57,7 +51,6 @@ async function saveDataToDatabase(data) {
       );
     }
 
-    console.log("Data inserted successfully.");
     await connection.end();
   } catch (error) {
     console.error("Error:", error);
@@ -74,11 +67,9 @@ router.post("/upload", upload.array("demo[]", 1), (req, res) => {
   const sheetName = workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
   const data = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-  //   console.log(data);
   resData = conversToArrayOfObjects(data);
-  //   console.log(resData);
   saveDataToDatabase(resData);
-  res.send("File uploaded and saved to db");
+  res.json({ success: true });
 });
 
 module.exports = router;
