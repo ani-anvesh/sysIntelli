@@ -28,9 +28,11 @@
           @for (doc of documents; track doc.name) {
           <li>
             <a class="cursor-pointer" (click)="fetchReceipts(doc)">{{
-              doc.vist_id.toString() +
-                doc.receipt_id.toString() +
-                doc.person_name
+              doc.person_name +
+                ": " +
+                doc.vist_id.toString() +
+                "_" +
+                doc.receipt_id.toString()
             }}</a>
           </li>
           } @empty {
