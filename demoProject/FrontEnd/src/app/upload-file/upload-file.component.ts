@@ -17,6 +17,7 @@ export class UploadFileComponent implements OnInit {
   //   'https://docs.google.com/document/d/1tdzZ4Fz1OtA46J8yNC_ZaBUPw_WnoDuH/edit?usp=sharing&ouid=102857697093579477882&rtpof=true&sd=true';
   // pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
   pdfUrl = 'https://pdfobject.com/pdf/sample.pdf';
+  // pdfUrl: string = '';
   constructor(
     private messageService: MessageService,
     private apiService: ApiService
@@ -54,25 +55,32 @@ export class UploadFileComponent implements OnInit {
       });
   }
 
-  fetchReceipts(person_id: string, vist_id: string, receipt_id: string) {
-    this.apiService
-      .getAllData(
-        'http://localhost:3000/api/receiptCreate/create?person_id=' +
-          person_id +
-          '&vist_id=' +
-          vist_id +
-          '&receipt_id=' +
-          receipt_id
-      )
-      .then((res) => {
-        if (res) {
-          // this.documents = res;
-          console.log('Receipt names fetched:', this.documents);
-        }
-      })
-      .catch((error) => {
-        console.error('Error fetching receipt names:', error);
-      });
+  fetchReceipts(data: any) {
+    // this.apiService
+    //   .getAllData(
+    //     'http://localhost:3000/api/receiptCreate/create?person_id=' +
+    //       data.person_id +
+    //       '&vist_id=' +
+    //       data.vist_id +
+    //       '&receipt_id=' +
+    //       data.receipt_id
+    //   )
+    //   .then((res) => {
+    //     if (res) {
+    //       // this.documents = res;
+    //       console.log('Receipt names fetched:', this.documents);
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     console.error('Error fetching receipt names:', error);
+    //   });
+    this.pdfUrl =
+      'http://localhost:3000/api/receiptCreate/create?person_id=' +
+      data.person_id +
+      '&vist_id=' +
+      data.vist_id +
+      '&receipt_id=' +
+      data.receipt_id;
   }
 
   onUpload(event: any) {
@@ -89,7 +97,7 @@ export class UploadFileComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.fetchReceiptNames();
-    this.fetchReceipts('12220380', '1222038091', '1222038081');
+    this.fetchReceiptNames();
+    // this.fetchReceipts('12220380', '1222038091', '1222038081');
   }
 }
