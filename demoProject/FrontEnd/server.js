@@ -59,6 +59,7 @@ app.on("ready", function () {
 app.use("/api/receiptUpload", require("./server/routes/uploadReceipts.routes"));
 app.use("/api/receiptFetch", require("./server/routes/fetchReceipts.routes"));
 app.use("/api/receiptCreate", require("./server/routes/createReceipts.routes"));
+app.use("/api/uploadToS3", require("./server/routes/uploadToS3.routes"));
 
 var server;
 if (process.argv.length == 2) {

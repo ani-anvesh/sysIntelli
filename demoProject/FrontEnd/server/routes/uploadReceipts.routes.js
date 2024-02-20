@@ -22,7 +22,7 @@ async function saveDataToDatabase(data) {
     const connection = await mysql.createConnection(dbConfig);
     for (const entry of data) {
       await connection.execute(
-        "INSERT INTO personal_details (person_id, address, dob, gender, person_name) VALUES (?, ?, ?, ?, ?)",
+        "INSERT INTO personal_details (person_id, address, dob, gender, person_name) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE address = VALUES(address), dob = VALUES(dob), gender = VALUES(gender), person_name = VALUES(person_name)",
         [
           entry.person_id,
           entry.address,

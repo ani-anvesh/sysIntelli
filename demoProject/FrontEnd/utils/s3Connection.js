@@ -1,7 +1,6 @@
 const {
   GetObjectCommand,
   S3Client,
-  PutObjectAclCommand,
   PutObjectCommand,
 } = require("@aws-sdk/client-s3");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
@@ -31,7 +30,7 @@ exports.putObjectURL = async (key) => {
     Key: key,
     contentType: "application/pdf",
   });
-  const url = await getSignedUrl(s3Client, command);
+  const url = await getSignedUrl(s3Client, command, { expiresIn: 60 });
   return url;
 };
 

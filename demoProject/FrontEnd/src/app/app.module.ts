@@ -16,9 +16,10 @@ import { ButtonModule } from 'primeng/button';
 import { NgxDocViewerModule } from 'ngx-doc-viewer';
 import { ApiService } from './services/api.service';
 import { AxiosService } from './services/axios.service';
+import { HeaderComponent } from './header/header.component';
 
 @NgModule({
-  declarations: [AppComponent, UploadFileComponent],
+  declarations: [AppComponent, HeaderComponent, UploadFileComponent],
   imports: [
     CommonModule,
     FileUploadModule,
