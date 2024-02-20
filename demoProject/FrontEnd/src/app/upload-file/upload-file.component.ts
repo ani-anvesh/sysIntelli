@@ -34,7 +34,6 @@ export class UploadFileComponent implements OnInit {
       .then((res) => {
         if (res) {
           this.documents = res;
-          console.log('Receipt names fetched:', this.documents);
         }
       })
       .catch((error) => {
@@ -43,31 +42,31 @@ export class UploadFileComponent implements OnInit {
   }
 
   fetchReceipts(data: any) {
-    // this.apiService
-    //   .getAllData(
-    //     'http://localhost:3000/api/receiptCreate/create?person_id=' +
-    //       data.person_id +
-    //       '&vist_id=' +
-    //       data.vist_id +
-    //       '&receipt_id=' +
-    //       data.receipt_id
-    //   )
-    //   .then((res) => {
-    //     if (res) {
-    //       // this.documents = res;
-    //       console.log('Receipt names fetched:', this.documents);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.error('Error fetching receipt names:', error);
-    //   });
-    this.pdfUrl =
-      'http://localhost:3000/api/receiptCreate/create?person_id=' +
-      data.person_id +
-      '&vist_id=' +
-      data.vist_id +
-      '&receipt_id=' +
-      data.receipt_id;
+    this.apiService
+      .getAllData(
+        'http://localhost:3000/api/receiptCreate/createS3?person_id=' +
+          data.person_id +
+          '&vist_id=' +
+          data.vist_id +
+          '&receipt_id=' +
+          data.receipt_id
+      )
+      .then((res) => {
+        if (res) {
+          // this.documents = res;
+          this.pdfUrl = res;
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching receipt names:', error);
+      });
+    // this.pdfUrl =
+    //   'http://localhost:3000/api/receiptCreate/create?person_id=' +
+    //   data.person_id +
+    //   '&vist_id=' +
+    //   data.vist_id +
+    //   '&receipt_id=' +
+    //   data.receipt_id;
   }
 
   onUpload(event: any) {

@@ -32,7 +32,7 @@ async function saveDataToDatabase(data) {
         ]
       );
       await connection.execute(
-        "INSERT INTO person_visit (vist_id, pro_consession, pro_name, pro_qty, pro_rate, receipt_id, ref_consession, ref_name, ref_qty, ref_rate, time_stamp, visit_address, person_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+        "INSERT INTO person_visit (vist_id, pro_consession, pro_name, pro_qty, pro_rate, receipt_id, ref_consession, ref_name, ref_qty, ref_rate, time_stamp, visit_address, person_id, pdfURL) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
         [
           entry.vist_id,
           entry.pro_consession,
@@ -47,6 +47,7 @@ async function saveDataToDatabase(data) {
           entry.time_stamp,
           entry.visit_address,
           entry.person_id,
+          "",
         ]
       );
     }

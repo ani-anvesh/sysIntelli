@@ -18,6 +18,8 @@
     "@angular/platform-browser": "^17.2.0",
     "@angular/platform-browser-dynamic": "^17.2.0",
     "@angular/router": "^17.2.0",
+    "@aws-sdk/client-s3": "^3.515.0",
+    "@aws-sdk/s3-request-presigner": "^3.515.0",
     "axios": "^1.6.7",
     "chalk": "^4.1.2",
     "cors": "^2.8.5",

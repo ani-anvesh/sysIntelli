@@ -3,16 +3,20 @@ const { dbConfig } = require("../../utils/db");
 const mysql = require("mysql2");
 const PDFDocument = require("pdfkit");
 const fs = require("fs");
+const {
+  getObjectURL,
+  putObjectURL,
+  uploadObjectToS3,
+} = require("../../utils/s3Connection");
 
 async function fetchData(person_id, vist_id, receipt_id) {
-  const connection = mysql.createConnection(dbConfig);
-
   return new Promise((resolve, reject) => {
+    const connection = mysql.createConnection(dbConfig);
     const query = `
     SELECT 
       pv.vist_id, pv.receipt_id, pv.person_id, pv.pro_consession, pv.pro_name, 
       pv.pro_qty, pv.pro_rate, pv.ref_consession, pv.ref_name, pv.ref_qty, 
-      pv.ref_rate, pv.time_stamp, pv.visit_address, 
+      pv.ref_rate, pv.time_stamp, pv.visit_address, pv.pdfURL,
       pd.address, pd.dob, pd.gender, pd.person_name 
     FROM 
       person_visit pv 
@@ -31,7 +35,7 @@ async function fetchData(person_id, vist_id, receipt_id) {
         } else {
           resolve(results);
         }
-        connection.end(); // Close connection after query execution
+        connection.end();
       }
     );
   });
@@ -41,7 +45,6 @@ function createPDF(data) {
   return new Promise((resolve, reject) => {
     const doc = new PDFDocument();
 
-    // Create a buffer to store the PDF content
     const buffers = [];
     doc.on("data", buffers.push.bind(buffers));
     doc.on("end", () => {
@@ -49,10 +52,8 @@ function createPDF(data) {
       resolve(pdfData);
     });
 
-    // Add content to the PDF
     doc.fontSize(18).text("Data from Database", { align: "center" });
 
-    // Add table headers
     const headers = [
       "Visit ID",
       "Receipt ID",
@@ -75,7 +76,6 @@ function createPDF(data) {
     doc.font("Helvetica-Bold");
     doc.text(headers.join(","), { align: "center" });
 
-    // Add table data from the database
     doc.font("Helvetica");
     data.forEach((item) => {
       const row = [
@@ -100,24 +100,49 @@ function createPDF(data) {
       doc.text(row.join(","), { align: "center" });
     });
 
-    // Finalize the PDF
     doc.end();
   });
 }
 
-// // Define your route
-// router.get("/create", async (req, res) => {
-//   const { person_id, vist_id, receipt_id } = req.query;
-
-//   try {
-//     const data = await fetchData(person_id, vist_id, receipt_id);
-//     createPDF(data);
-//     res.json(data);
-//   } catch (error) {
-//     console.error("Error fetching data:", error);
-//     res.status(500).json({ error: "Internal server error" });
-//   }
-// });
+async function createS3PDFURL(dbData) {
+  const pdfData = await createPDF(dbData);
+  const pdfName = `receipt_${
+    dbData[0].person_id.toString() +
+    "_" +
+    dbData[0].vist_id.toString() +
+    "_" +
+    dbData[0].receipt_id.toString() +
+    "_" +
+    dbData[0].person_name
+  }.pdf`;
+  const pdfPUTDataURL = await putObjectURL(pdfName);
+  if (pdfPUTDataURL) {
+    const res = await uploadObjectToS3(pdfPUTDataURL, pdfData);
+    if (res && res.status == 200 && res.statusText == "OK") {
+      const pdfURL = await getObjectURL(pdfName);
+      if (pdfURL) {
+        const connection = mysql.createConnection(dbConfig);
+        try {
+          await connection.execute(
+            "UPDATE person_visit SET pdfURL = ? WHERE person_id = ? AND vist_id = ? AND receipt_id = ?",
+            [
+              pdfURL,
+              dbData[0].person_id,
+              dbData[0].vist_id,
+              dbData[0].receipt_id,
+            ]
+          );
+        } catch (error) {
+          console.error("Error inserting PDF URL:", error);
+        } finally {
+          // Close the connection
+          await connection.end();
+          return pdfURL;
+        }
+      }
+    }
+  }
+}
 
 router.get("/create", async (req, res) => {
   const { person_id, vist_id, receipt_id } = req.query;
@@ -125,11 +150,28 @@ router.get("/create", async (req, res) => {
   try {
     const data = await fetchData(person_id, vist_id, receipt_id);
     const pdfData = await createPDF(data);
-
-    // Send the PDF file to the frontend
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader("Content-Disposition", "inline; filename=example.pdf");
     res.send(pdfData);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/createS3", async (req, res) => {
+  const { person_id, vist_id, receipt_id } = req.query;
+
+  try {
+    const data = await fetchData(person_id, vist_id, receipt_id);
+    if (data && data[0] && data[0].pdfURL && data[0].pdfURL.length > 0) {
+      console.log("calling db");
+      res.send(data[0].pdfURL);
+    } else {
+      console.log("calling AWS");
+      const pdfData = await createS3PDFURL(data);
+      res.send(pdfData);
+    }
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ error: "Internal server error" });
