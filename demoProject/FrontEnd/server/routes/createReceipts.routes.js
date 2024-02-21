@@ -115,9 +115,13 @@ async function createS3PDFURL(dbData) {
     "_" +
     dbData[0].person_name
   }.pdf`;
-  const pdfPUTDataURL = await putObjectURL(pdfName);
+  const pdfPUTDataURL = await putObjectURL(pdfName, "application/pdf");
   if (pdfPUTDataURL) {
-    const res = await uploadObjectToS3(pdfPUTDataURL, pdfData);
+    const res = await uploadObjectToS3(
+      pdfPUTDataURL,
+      pdfData,
+      "application/pdf"
+    );
     if (res && res.status == 200 && res.statusText == "OK") {
       const pdfURL = await getObjectURL(pdfName);
       if (pdfURL) {

@@ -11,6 +11,7 @@ import * as _ from 'lodash';
 })
 export class UploadFileComponent implements OnInit {
   uploadedFiles: any[] = [];
+  uploadURL: string = 'http://localhost:3000/api/receiptUpload/upload';
   documents: any = [];
   isCollapsed: { [key: string]: boolean } = {};
 
@@ -53,6 +54,28 @@ export class UploadFileComponent implements OnInit {
       });
   }
 
+  fetchAllFiles() {
+    this.apiService
+      .getAllData('http://localhost:3000/api/uploadToS3/fetchAllFiles')
+      .then((res) => {
+        if (res) {
+          this.documents = _.mergeWith(
+            this.documents,
+            this.updateDateStructure(res),
+            (objValue, srcValue) => {
+              if (_.isArray(objValue) && _.isArray(srcValue)) {
+                return objValue.concat(srcValue);
+              }
+              return objValue;
+            }
+          );
+        }
+      })
+      .catch((error) => {
+        console.error('Error fetching receipt names:', error);
+      });
+  }
+
   async fetchReceipts(data: any) {
     await this.apiService
       .getAllData(
@@ -65,7 +88,6 @@ export class UploadFileComponent implements OnInit {
       )
       .then((res) => {
         if (res) {
-          // this.documents = res;
           return (this.pdfUrl = res);
         }
       })
@@ -81,6 +103,21 @@ export class UploadFileComponent implements OnInit {
     //   data.receipt_id;
   }
 
+  async fetchFilesS3(data: any) {
+    await this.apiService
+      .getAllData(
+        'http://localhost:3000/api/uploadToS3/fetch?fileName=' + data.fileName
+      )
+      .then((res) => {
+        if (res) {
+          return (this.pdfUrl = res);
+        }
+      })
+      .catch((error) => {
+        return console.error('Error fetching receipt names:', error);
+      });
+  }
+
   onUpload(event: any) {
     if (event && event.files && event.files[0]) {
       this.messageService.add({
@@ -88,9 +125,29 @@ export class UploadFileComponent implements OnInit {
         summary: 'File Uploaded',
         detail: '',
       });
+      this.documents = [];
       this.fetchReceiptNames();
+      this.fetchAllFiles();
     } else {
       console.error('No file selected for upload.');
+    }
+  }
+
+  onSelect(event: any) {
+    if (
+      event.currentFiles[0].type == '.csv' ||
+      event.currentFiles[0].type ==
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+      event.currentFiles[0].type == 'application/vnd.ms-excel'
+    ) {
+      this.uploadURL = 'http://localhost:3000/api/receiptUpload/upload';
+    } else {
+      this.uploadURL =
+        'http://localhost:3000/api/uploadToS3/upload?fileName=' +
+        event.currentFiles[0].name +
+        '&contentType=' +
+        event.currentFiles[0].type +
+        '&person_name=Anvesh';
     }
   }
 
@@ -101,7 +158,6 @@ export class UploadFileComponent implements OnInit {
     this.apiService
       .getAllData(this.pdfUrl, { responseType: 'arraybuffer' })
       .then(function (response: any) {
-        console.log(response);
         if (response) {
           var blob = new Blob([response], { type: 'application/pdf' });
           // var url = window.URL.createObjectURL(blob);
@@ -117,7 +173,9 @@ export class UploadFileComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.documents = [];
     this.fetchReceiptNames();
+    this.fetchAllFiles();
     // this.fetchReceipts('12220380', '1222038091', '1222038081');
   }
 }

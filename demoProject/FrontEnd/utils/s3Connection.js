@@ -24,21 +24,21 @@ exports.getObjectURL = async (key) => {
   return url;
 };
 
-exports.putObjectURL = async (key) => {
+exports.putObjectURL = async (key, contentType) => {
   const command = new PutObjectCommand({
     Bucket: "sysintelli-receipts-bucket",
     Key: key,
-    contentType: "application/pdf",
+    contentType: contentType,
   });
   const url = await getSignedUrl(s3Client, command, { expiresIn: 60 });
   return url;
 };
 
-exports.uploadObjectToS3 = async (url, pdfData) => {
+exports.uploadObjectToS3 = async (url, pdfData, contentType) => {
   try {
     const response = await axios.put(url, pdfData, {
       headers: {
-        "Content-Type": "application/pdf",
+        "Content-Type": contentType,
       },
     });
     return response;

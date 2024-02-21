@@ -45,6 +45,7 @@
                     style="color: 'var(--primary-color)'"
                   ></i
                   ><a
+                    *ngIf="item.vist_id || item.receipt_id; else elseBlock"
                     class="cursor-pointer ml-3"
                     (click)="fetchReceipts(item)"
                     >{{
@@ -54,6 +55,13 @@
                         item.receipt_id.toString()
                     }}</a
                   >
+                  <ng-template #elseBlock>
+                    <a
+                      class="cursor-pointer ml-3"
+                      (click)="fetchFilesS3(item)"
+                      >{{ item.fileName }}</a
+                    >
+                  </ng-template>
                 </li>
                 }
               </ul>
@@ -71,10 +79,11 @@
           mode="basic"
           chooseLabel="Upload"
           name="demo[]"
-          url="http://localhost:3000/api/receiptUpload/upload"
-          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-          [maxFileSize]="1000000"
+          [url]="uploadURL"
+          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, image/jpeg, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, image/png, application/pdf"
+          [maxFileSize]="5242880"
           (onUpload)="onUpload($event)"
+          (onSelect)="onSelect($event)"
           size="small"
         ></p-fileUpload>
       </div>
@@ -88,3 +97,7 @@
     </div>
   </div>
 </section>
+<!-- 
+          url="http://localhost:3000/api/receiptUpload/upload"
+
+ -->
