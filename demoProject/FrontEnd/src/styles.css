@@ -11,7 +11,7 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-/* @layer tailwind-base, primeng, tailwind-utilities;
+@layer tailwind-base, primeng, tailwind-utilities;
 
 @layer tailwind-base {
   @tailwind base;
@@ -20,4 +20,17 @@
 @layer tailwind-utilities {
   @tailwind components;
   @tailwind utilities;
-} */
+}
+
+input {
+  width: 100% !important;
+  border-width: 1px !important;
+  border-top-left-radius: 0 !important;
+  border-bottom-left-radius: 0 !important;
+  padding-left: 6px !important;
+}
+
+.p-inputgroup > .p-inputwrapper:last-child > .p-component {
+  width: 100% !important;
+  height: 100% !important;
+}

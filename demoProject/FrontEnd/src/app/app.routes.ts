@@ -1,9 +1,14 @@
 import { Routes } from '@angular/router';
-import { UploadFileComponent } from './upload-file/upload-file.component';
+import { UploadFileComponent } from './components/upload-file/upload-file.component';
+import { LoginComponent } from './components/login/login.component';
 
 export const routes: Routes = [
   {
     path: '',
+    component: LoginComponent,
+  },
+  {
+    path: 'home',
     component: UploadFileComponent,
   },
 ];

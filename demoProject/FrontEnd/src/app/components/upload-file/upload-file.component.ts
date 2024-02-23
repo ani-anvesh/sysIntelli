@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { MessageService, MenuItem } from 'primeng/api';
-import { ApiService } from '../services/api.service';
+import { ApiService } from '../../services/api.service';
 import * as _ from 'lodash';
 
 @Component({

@@ -12,6 +12,17 @@ export class AxiosService {
       timeout: 300000,
     });
 
+    this.axios.interceptors.request.use(
+      function (config) {
+        config.withCredentials = true;
+        console.log(config);
+        return config;
+      },
+      function (error) {
+        return Promise.reject(error);
+      }
+    );
+
     this.axios.interceptors.response.use(undefined, function (error: any) {
       return Promise.reject(error);
     });

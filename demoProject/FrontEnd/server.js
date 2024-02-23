@@ -4,6 +4,8 @@ var chalk = require("chalk");
 var figlet = require("figlet");
 var http = require("http");
 var cors = require("cors");
+const cookieSession = require("cookie-session");
+authRestrictionService = require("./utils/authJWT");
 
 var options = {};
 
@@ -16,13 +18,27 @@ const APPLICATION_PORT = 3000;
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ extended: true, limmit: "50mb" }));
 // app.use(cookieParser())
-app.use(cors());
-app.use(function (req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-methods", "POST, GET, OPTIONS, DELETE, PUT");
-  res.header("Access-Control-Allow-Headers", "*");
-  next();
-});
+// app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:4200", // Update this with your frontend origin
+    credentials: true,
+  })
+);
+app.use(
+  cookieSession({
+    name: "JWT-session",
+    keys: ["COOKIE_SECRET"], // should use as secret environment variable
+    httpOnly: true,
+  })
+);
+app.options(
+  "*",
+  cors({
+    origin: "http://localhost:4200", // Update this with your frontend origin
+    credentials: true,
+  })
+);
 
 // app.use(express.static(process.env.baseURL + "/"));
 
@@ -56,10 +72,27 @@ app.on("ready", function () {
   });
 });
 
-app.use("/api/receiptUpload", require("./server/routes/uploadReceipts.routes"));
-app.use("/api/receiptFetch", require("./server/routes/fetchReceipts.routes"));
-app.use("/api/receiptCreate", require("./server/routes/createReceipts.routes"));
-app.use("/api/uploadToS3", require("./server/routes/uploadToS3.routes"));
+app.use(
+  "/api/receiptUpload",
+  authRestrictionService.verifyToken,
+  require("./server/routes/uploadReceipts.routes")
+);
+app.use(
+  "/api/receiptFetch",
+  authRestrictionService.verifyToken,
+  require("./server/routes/fetchReceipts.routes")
+);
+app.use(
+  "/api/receiptCreate",
+  authRestrictionService.verifyToken,
+  require("./server/routes/createReceipts.routes")
+);
+app.use(
+  "/api/uploadToS3",
+  authRestrictionService.verifyToken,
+  require("./server/routes/uploadToS3.routes")
+);
+app.use("/api/sign", require("./server/routes/sign.routes"));
 
 var server;
 if (process.argv.length == 2) {
