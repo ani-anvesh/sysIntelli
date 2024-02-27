@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpHeaders } from '@angular/common/http';
 import { Observable, from } from 'rxjs';
 import { ApiService } from './api.service';
-import { JwtHelperService } from '@auth0/angular-jwt';
-import { CookieService } from 'ngx-cookie-service';
+import { Router } from '@angular/router';
+import { TokenService } from './token.service';
 
 const AUTH_API = 'http://localhost:3000/api/sign/';
 
@@ -17,11 +17,9 @@ const httpOptions = {
 export class AuthService {
   constructor(
     private apiService: ApiService,
-    private jwtHelper: JwtHelperService,
-    private cookieService: CookieService
-  ) {
-    this.jwtHelper = new JwtHelperService();
-  }
+    private router: Router,
+    private tokenService: TokenService
+  ) {}
 
   login(email: string, password: string): Observable<any> {
     return from(
@@ -35,24 +33,21 @@ export class AuthService {
       )
     );
   }
-  clean(): void {
-    window.sessionStorage.clear();
-  }
+
   logout(): Observable<any> {
     return from(
       this.apiService.postAllData(AUTH_API + 'logout', {}, httpOptions)
     );
   }
-  isLoggedIn(): boolean {
-    const accessToken = this.getAccessTokenFromCookie();
-    if (accessToken && !this.jwtHelper.isTokenExpired(accessToken)) {
-      return true;
-    } else {
+
+  canActivate(): boolean {
+    const isAuthenticated = this.tokenService.getUser().Auth;
+
+    if (!isAuthenticated) {
+      this.router.navigate(['/']);
       return false;
     }
-  }
 
-  getAccessTokenFromCookie(): string | null {
-    return this.cookieService.get('access_token');
+    return true;
   }
 }

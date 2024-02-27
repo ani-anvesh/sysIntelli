@@ -2,13 +2,14 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
+import { TokenService } from '../../services/token.service';
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent {
   password: string = '';
   form: FormGroup;
   isLoggedIn = false;
@@ -18,7 +19,8 @@ export class LoginComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
-    private router: Router
+    private router: Router,
+    private tokenService: TokenService
   ) {
     this.form = this.fb.group({
       email: ['', Validators.required],
@@ -32,6 +34,7 @@ export class LoginComponent implements OnInit {
     if (email && password) {
       this.authService.login(email, password).subscribe({
         next: (data) => {
+          this.tokenService.saveUser(data);
           this.isLoginFailed = !data.Auth;
           this.isLoggedIn = data.Auth;
           if (this.isLoggedIn) {
@@ -48,12 +51,5 @@ export class LoginComponent implements OnInit {
 
   reloadPage(): void {
     window.location.reload();
-  }
-
-  ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn();
-    if (!this.isLoggedIn) {
-      this.router.navigate(['/']);
-    }
   }
 }

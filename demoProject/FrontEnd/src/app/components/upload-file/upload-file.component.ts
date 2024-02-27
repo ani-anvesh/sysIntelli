@@ -1,7 +1,9 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
-import { MessageService, MenuItem } from 'primeng/api';
+import { MessageService, ConfirmEventType } from 'primeng/api';
 import { ApiService } from '../../services/api.service';
 import * as _ from 'lodash';
+import { TokenService } from '../../services/token.service';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-upload-file',
@@ -22,7 +24,9 @@ export class UploadFileComponent implements OnInit {
   // pdfUrl: string = '';
   constructor(
     private messageService: MessageService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private tokenService: TokenService,
+    private http: HttpClient
   ) {}
 
   toggleCollapse(docName: string) {
@@ -176,6 +180,7 @@ export class UploadFileComponent implements OnInit {
     this.documents = [];
     this.fetchReceiptNames();
     this.fetchAllFiles();
+    this.tokenService.startTokenExpiryMonitoring();
     // this.fetchReceipts('12220380', '1222038091', '1222038081');
   }
 }

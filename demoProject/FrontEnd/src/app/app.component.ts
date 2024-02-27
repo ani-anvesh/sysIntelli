@@ -12,15 +12,12 @@ export class AppComponent {
 
   constructor(private authService: AuthService) {}
 
-  ngOnInit(): void {
-    this.isLoggedIn = this.authService.isLoggedIn();
-  }
+  ngOnInit(): void {}
 
   logout(): void {
     this.authService.logout().subscribe({
       next: (res) => {
         console.log(res);
-        this.authService.clean();
         window.location.reload();
       },
       error: (err) => {

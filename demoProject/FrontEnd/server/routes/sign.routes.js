@@ -7,8 +7,24 @@ const { dbConfig } = require("../../utils/db");
 async function fetchUser(email) {
   return new Promise((resolve, reject) => {
     const connection = mysql.createConnection(dbConfig);
-    const query = `SELECT au.email, au.pass FROM Auth au WHERE au.email = ?`;
+    const query = `SELECT au.email, au.pass, au.JWTtoken FROM Auth au WHERE au.email = ?`;
     connection.query(query, [email], (err, results) => {
+      if (err) {
+        console.error("Error executing query:", err);
+        reject(err);
+      } else {
+        resolve(results);
+      }
+      connection.end();
+    });
+  });
+}
+
+async function saveTokentoDB(token, email) {
+  return new Promise((resolve, reject) => {
+    const connection = mysql.createConnection(dbConfig);
+    const query = `UPDATE Auth SET JWTtoken = ? WHERE email = ?`;
+    connection.query(query, [token, email], (err, results) => {
       if (err) {
         console.error("Error executing query:", err);
         reject(err);
@@ -41,13 +57,14 @@ async function signin(req, res) {
     const token = jwt.sign({ email: email }, config.secret, {
       algorithm: "HS256",
       allowInsecureKeySizes: true,
-      expiresIn: 30, // 24 hours
+      expiresIn: 120,
     });
 
     req.session.token = token;
+    await saveTokentoDB(token, req.body.email);
 
     return res.status(200).send({
-      email: email,
+      email: req.body.email,
       Auth: true,
     });
   } catch (error) {
@@ -80,6 +97,53 @@ router.post("/login", async (req, res) => {
 router.post("/logout", async (req, res) => {
   try {
     return await signout(req, res);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/token", async (req, res) => {
+  const { email } = req.query;
+  try {
+    const data = await fetchUser(email);
+    return res.json(data && data[0] && data[0].JWTtoken);
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/refreshToken", async (req, res) => {
+  const { email } = req.query;
+  try {
+    const token = jwt.sign({ email: email }, config.secret, {
+      algorithm: "HS256",
+      allowInsecureKeySizes: true,
+      expiresIn: 120,
+    });
+
+    req.session.token = token;
+    await saveTokentoDB(token, email);
+
+    return res.status(200).send({
+      email: email,
+      Auth: true,
+    });
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+});
+
+router.get("/clearToken", async (req, res) => {
+  const { email } = req.query;
+  try {
+    await saveTokentoDB("", email);
+    req.session.token = null;
+    return res.status(200).send({
+      state: "logOut",
+    });
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ error: "Internal server error" });

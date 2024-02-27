@@ -1,9 +1,9 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule, RouterOutlet } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { ToastModule } from 'primeng/toast';
 import { FileUploadModule } from 'primeng/fileupload';
-import { MessageService } from 'primeng/api';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { UploadFileComponent } from './components/upload-file/upload-file.component';
 import { DividerModule } from 'primeng/divider';
 import { SplitButtonModule } from 'primeng/splitbutton';
@@ -22,9 +22,10 @@ import { InputGroupModule } from 'primeng/inputgroup';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { PasswordModule } from 'primeng/password';
 import { FormsModule } from '@angular/forms';
-import { StorageService } from './services/storage.service';
 import { AuthService } from './services/auth.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule, HttpClientXsrfModule } from '@angular/common/http';
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
 
 @NgModule({
   declarations: [
@@ -50,14 +51,17 @@ import { ReactiveFormsModule } from '@angular/forms';
     PasswordModule,
     FormsModule,
     ReactiveFormsModule,
+    HttpClientModule,
+    ConfirmDialogModule,
   ],
   providers: [
     MessageService,
     ApiService,
     AxiosService,
-    StorageService,
     AuthService,
+    ConfirmationService,
   ],
+
   bootstrap: [AppComponent],
 })
 export class AppModule {}

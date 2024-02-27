@@ -2,7 +2,6 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 
 verifyToken = (req, res, next) => {
-  console.log("called");
   let token = req.session.token;
 
   if (!token) {
@@ -12,14 +11,16 @@ verifyToken = (req, res, next) => {
   }
 
   jwt.verify(token, config.secret, (err, decoded) => {
-    if (err && err.name === "TokenExpiredError") {
-      return res.status(401).send({
-        message: "Token expired!",
-      });
-    } else {
-      return res.status(401).send({
-        message: "Unauthorized!",
-      });
+    if (err) {
+      if (err.name === "TokenExpiredError") {
+        return res.status(401).send({
+          message: "Token expired!",
+        });
+      } else {
+        return res.status(401).send({
+          message: "Unauthorized!",
+        });
+      }
     }
     req.userId = decoded.id;
     next();

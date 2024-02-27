@@ -37,19 +37,11 @@ export class ApiService {
         timeout: this.AXIOS_TIMEOUT,
       })
       .then(async (response) => {
-        results = response.data;
+        results = response && response.data;
       })
       .catch((error) => {
-        var errorResponce = {
-          error: true,
-          type: 'Error in common api service',
-          message: error.message || 'N/A',
-          status: error.status || 'N/A',
-          data: error.response.data || 'N/A',
-          url: url,
-        };
         console.log(error);
-        results = errorResponce;
+        results = error;
       });
     return results;
   }
@@ -76,19 +68,11 @@ export class ApiService {
         timeout: this.AXIOS_TIMEOUT,
       })
       .then(async (response) => {
-        results = response.data;
+        results = response && response.data;
       })
       .catch((error) => {
-        var errorResponce = {
-          error: true,
-          type: 'Error in common api service',
-          message: error.message || 'N/A',
-          status: error.status || 'N/A',
-          data: error.response.data || 'N/A',
-          url: url,
-        };
         console.log(error);
-        results = errorResponce;
+        results = error;
       });
     return results;
   }
@@ -117,19 +101,19 @@ export class ApiService {
         timeout: this.AXIOS_TIMEOUT,
       })
       .then(async (response) => {
-        results = response.data;
+        results = response && response.data;
       })
       .catch((error) => {
-        var errorResponce = {
-          error: true,
-          type: 'Error in common api service',
-          message: error.message || 'N/A',
-          status: error.status || 'N/A',
-          data: error.response.data || 'N/A',
-          url: url,
-        };
+        // var errorResponce = {
+        //   error: true,
+        //   type: 'Error in common api service',
+        //   message: error.message || 'N/A',
+        //   status: error.status || 'N/A',
+        //   data: error.response.data || 'N/A',
+        //   url: url,
+        // };
         console.log(error);
-        results = errorResponce;
+        results = error;
       });
     return results;
   }
@@ -161,16 +145,8 @@ export class ApiService {
         results = response;
       })
       .catch((error) => {
-        var errorResponce = {
-          error: true,
-          type: 'Error in common api service',
-          message: error.message || 'N/A',
-          status: error.status || 'N/A',
-          data: error.response.data || 'N/A',
-          url: url,
-        };
         console.log(error);
-        results = errorResponce;
+        results = error;
       });
     return results;
   }
