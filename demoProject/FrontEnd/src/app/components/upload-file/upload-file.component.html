@@ -1,0 +1,107 @@
+<app-header></app-header>
+<section aria-labelledby="products-heading" class="pb-24 pt-6">
+  <div
+    class="grid grid-cols-1 gap-x-8 gap-y-10 md:grid-cols-4"
+    style="min-height: 67vh"
+  >
+    <div class="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-1 min-h-full">
+      <ul
+        role="list"
+        class="space-y-4 pb-6 text-sm font-medium text-gray-900 min-h-80"
+      >
+        @for (doc of getObjectKeys(documents); track doc; let i = $index) {
+        <li>
+          <button
+            type="button"
+            class="flex w-full items-center justify-between bg-white px-2 py-2 text-gray-400 hover:text-gray-500"
+            aria-controls="filter-section-mobile-0"
+            [attr.aria-expanded]="isCollapsed[doc] ? 'false' : 'true'"
+            (click)="toggleCollapse(doc)"
+          >
+            <span class="font-medium text-gray-900">{{ doc }}</span>
+            <span class="flex items-center">
+              <i
+                class="pi"
+                style="color: 'var(--primary-color)'"
+                [ngClass]="{
+                  'pi-plus': isCollapsed[doc],
+                  'pi-minus': !isCollapsed[doc]
+                }"
+              ></i>
+            </span>
+          </button>
+          <div
+            class="pt-2"
+            id="filter-section-mobile-0"
+            [class.hidden]="isCollapsed[doc]"
+          >
+            <div class="space-y-6">
+              <ul role="list" class="space-y-4 px-6 text-gray-600">
+                @for (item of documents[doc]; track item; let i = $index) {
+                <li>
+                  <i
+                    (click)="downloadPdfFromS3URL(item)"
+                    class="pi pi-download"
+                    style="color: 'var(--primary-color)'"
+                  ></i
+                  ><a
+                    *ngIf="item.vist_id || item.receipt_id; else elseBlock"
+                    class="cursor-pointer ml-3"
+                    (click)="fetchReceipts(item)"
+                    >{{
+                      "Receipt: " +
+                        item.vist_id.toString() +
+                        "_" +
+                        item.receipt_id.toString()
+                    }}</a
+                  >
+                  <ng-template #elseBlock>
+                    <a
+                      class="cursor-pointer ml-3"
+                      (click)="fetchFilesS3(item)"
+                      >{{ item.fileName }}</a
+                    >
+                  </ng-template>
+                </li>
+                }
+              </ul>
+            </div>
+          </div>
+        </li>
+
+        } @empty {
+        <span>Empty list of users</span>
+        }
+      </ul>
+      <div class="flex self-end">
+        <p-toast></p-toast>
+        <p-fileUpload
+          mode="basic"
+          chooseLabel="Upload"
+          name="demo[]"
+          [url]="uploadURL"
+          accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel, image/jpeg, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, image/png, application/pdf"
+          [maxFileSize]="5242880"
+          (onUpload)="onUpload($event)"
+          (onSelect)="onSelect($event)"
+          size="small"
+          [withCredentials]="true"
+        ></p-fileUpload>
+      </div>
+    </div>
+    <div class="col-span-3">
+      <ngx-doc-viewer
+        [url]="pdfUrl"
+        viewer="url"
+        style="width: 100%; height: 67vh"
+      ></ngx-doc-viewer>
+    </div>
+  </div>
+</section>
+
+<p-confirmDialog
+  #cd
+  key="positionDialog"
+  position="top-right"
+  rejectButtonStyleClass="p-button-outlined"
+></p-confirmDialog>
