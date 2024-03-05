@@ -7,7 +7,7 @@ const { dbConfig } = require("../../utils/db");
 async function fetchUser(email) {
   return new Promise((resolve, reject) => {
     const connection = mysql.createConnection(dbConfig);
-    const query = `SELECT au.email_id, au.password, au.JWTtoken FROM patient au WHERE au.email_id = ?`;
+    const query = `SELECT au.email_id, au.password, au.jwttoken FROM patient au WHERE au.email_id = ?`;
     connection.query(query, [email], (err, results) => {
       if (err) {
         console.error("Error executing query:", err);
@@ -23,7 +23,7 @@ async function fetchUser(email) {
 async function saveTokentoDB(token, email) {
   return new Promise((resolve, reject) => {
     const connection = mysql.createConnection(dbConfig);
-    const query = `UPDATE patient SET JWTtoken = ? WHERE email_id = ?`;
+    const query = `UPDATE patient SET jwttoken = ? WHERE email_id = ?`;
     connection.query(query, [token, email], (err, results) => {
       if (err) {
         console.error("Error executing query:", err);
@@ -38,10 +38,7 @@ async function saveTokentoDB(token, email) {
 
 async function signin(req, res) {
   try {
-    console.log(req.body.email);
-
     const data = await fetchUser(req.body.email);
-    console.log(data);
     const email = data && data[0] && req.body.email == data[0].email_id;
 
     if (!email) {
@@ -113,7 +110,7 @@ router.get("/token", async (req, res) => {
   const { email } = req.query;
   try {
     const data = await fetchUser(email);
-    return res.json(data && data[0] && data[0].JWTtoken);
+    return res.json(data && data[0] && data[0].jwttoken);
   } catch (error) {
     console.error("Error fetching data:", error);
     res.status(500).json({ error: "Internal server error" });
