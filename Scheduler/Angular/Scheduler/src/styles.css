@@ -1,0 +1,21 @@
+/* You can add global styles to this file, and also import other style files */
+@import "~bootstrap/dist/css/bootstrap.css";
+@import "~bootstrap-icons/font/bootstrap-icons.css";
+
+.row {
+  --bs-gutter-x: 0;
+}
+
+.dropdown-toggle::after {
+  content: "";
+  display: inline;
+  /* position: absolute; */
+  width: 9px;
+  height: 7px;
+  right: 0;
+  top: 5px;
+  margin: auto;
+  border-top: 1px solid black !important;
+  border-right: 1px solid black !important;
+  transform: rotate(135deg);
+}

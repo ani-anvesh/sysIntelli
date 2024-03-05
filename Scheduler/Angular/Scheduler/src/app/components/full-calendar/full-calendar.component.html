@@ -1,0 +1,135 @@
+<div
+  class="calendar-contain mt-5 position-relative w-100 overflow-hidden mx-auto my-4"
+>
+  <section class="title-bar position-relative d-table w-100 mb-0 p-2">
+    <!-- <span class="title-bar__month"> Month </span> -->
+    <div class="d-flex">
+      <a
+        class="nav-link dropdown-toggle"
+        href="#"
+        id="navbarDarkDropdownMenuLink"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <i class="bi bi-person-fill"></i> Doctor: {{ selectedMonth }}
+      </a>
+      <ul
+        class="dropdown-menu dropdown-menu-dark"
+        aria-labelledby="navbarDarkDropdownMenuLink"
+      >
+        <li *ngFor="let month of monthOptions" (click)="monthSelected(month)">
+          <a class="dropdown-item">{{ month }}</a>
+        </li>
+      </ul>
+      <a
+        class="nav-link dropdown-toggle ms-3"
+        href="#"
+        id="navbarDarkDropdownMenuLink"
+        role="button"
+        data-bs-toggle="dropdown"
+        aria-expanded="false"
+      >
+        <i class="bi bi-calendar-event"></i> Month: {{ selectedMonth }}
+      </a>
+      <ul
+        class="dropdown-menu dropdown-menu-dark"
+        aria-labelledby="navbarDarkDropdownMenuLink"
+      >
+        <li *ngFor="let month of monthOptions" (click)="monthSelected(month)">
+          <a class="dropdown-item">{{ month }}</a>
+        </li>
+      </ul>
+    </div>
+  </section>
+
+  <aside class="calendar__sidebar">
+    <div class="calendar">
+      <div
+        class="timeline"
+        [style.gridTemplateRows]="getTimelineColumnTemplate()"
+      >
+        <div class="spacer"></div>
+        <div class="time-marker" *ngFor="let marker of timeMarkers">
+          {{ marker }}
+        </div>
+      </div>
+      <div class="day mon">
+        <div class="date">
+          <p class="date-num">{{ selectedMonth }} {{ selectedDate }}</p>
+          <p class="date-day">{{ selectedDay }}</p>
+        </div>
+        <div class="slots" [style.gridTemplateRows]="getEventColumnTemplate()">
+          <div *ngFor="let slot of timeSlotData" class="slot">
+            <span>{{ slot.startTime }} - {{ slot.endTime }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <section class="calendar__days">
+    <section class="calendar__top-bar mx-1">
+      <span *ngFor="let day of weekdays" class="top-bar__days">{{ day }}</span>
+    </section>
+
+    <ng-container
+      *ngFor="let chunk of chunkArray(allDays, 7); let lastChunk = last"
+    >
+      <section
+        class="calendar__week row mx-1"
+        [class.border-bottom]="!lastChunk"
+      >
+        <div
+          class="col p-0"
+          *ngFor="
+            let day of chunk;
+            let i = index;
+            last as isLast;
+            first as isFirst
+          "
+        >
+          <div class="calendar__day__container">
+            <div
+              (click)="!day.inactive && dateSelectClick(day)"
+              class="calendar__day d-flex flex-column justify-content-between"
+              [ngClass]="{
+                inactive: day.inactive,
+                today: day.today,
+                'no-border': isLast
+              }"
+            >
+              <span class="calendar__date">{{ day.date }}</span>
+              <span
+                class="calendar__task"
+                [ngClass]="{ 'calendar__task--today': day.today }"
+                >{{ day.slotsAvailable }}</span
+              >
+            </div>
+
+            <div class="position-absolute divider_div" *ngIf="day.dateSelect">
+              <div
+                (click)="shiftSelectClick(day, shift)"
+                *ngFor="
+                  let shift of [
+                    '09:00 - 12:00 : (2)',
+                    '14:00 - 17:00 : (3)',
+                    '19:00 - 22:00 : (5)'
+                  ]
+                "
+                class="divider"
+                [ngClass]="{
+                  inactive: day.inactive,
+                  today: day.today,
+                  activeBackground: selectedShift == shift
+                }"
+              >
+                <span class="pe-none">{{ shift }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </ng-container>
+  </section>
+</div>

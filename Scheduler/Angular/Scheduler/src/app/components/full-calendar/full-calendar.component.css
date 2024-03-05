@@ -1,0 +1,358 @@
+* {
+  outline: none;
+  box-sizing: border-box;
+}
+
+.calendar {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto 1fr;
+  margin: 2rem;
+}
+
+.timeline {
+  display: grid;
+  position: relative;
+}
+
+.time-marker {
+  display: flex;
+  font-weight: 600;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.slots {
+  display: grid;
+  border-radius: 5px;
+  /* background: #fff1f8; */
+  background: #ffffff50;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.start-2 {
+  grid-row-start: 2;
+}
+
+.end-5 {
+  grid-row-end: 3;
+}
+
+html {
+  font-size: 100%;
+}
+
+.title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.slot {
+  border-radius: 5px;
+  padding: 0.1rem 0.5rem;
+  margin: 0.1rem;
+  background: #ffffff50;
+  border-bottom: 1px solid rgba(0, 0, 0, 0);
+  /* position: relative; */
+}
+
+.slot:hover {
+  background: #ffd6d1;
+}
+
+.slot > span {
+  font-size: 0.7rem;
+  font-weight: 900;
+  color: #00003060;
+  text-shadow: -2px -2px 4px rgba(255, 255, 255, 0.8),
+    2px 2px 4px rgba(0, 0, 0, 0.2);
+  caret-color: #262626;
+  outline: none;
+}
+
+.spacer,
+.date {
+  height: 60px;
+}
+
+.date {
+  display: flex;
+  gap: 1em;
+}
+
+.date-num {
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: inline;
+}
+
+.date-day {
+  display: inline;
+  font-size: 1.5rem;
+  font-weight: 100;
+}
+
+body {
+  height: 100%;
+  padding: 1rem;
+  background-color: #f6f5f1;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-family: -apple-system, BlinkMacSystemFont, system-ui, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, "Helvetica Neue", sans-serif;
+  background-image: linear-gradient(45deg, #f86a6c 0%, #fd588a 100%);
+}
+@media screen and (min-width: 55em) {
+  body {
+    height: 100vh;
+    margin: 0;
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  -webkit-font-smoothing: antialiased;
+}
+
+p,
+span,
+ul,
+li {
+  color: #2d4338;
+  font-weight: 100;
+  -webkit-font-smoothing: subpixel-antialiased;
+  font-size: 1rem;
+}
+
+.calendar-contain {
+  max-width: 97vw;
+  min-width: 450px;
+  background-color: #f5f7f6;
+  box-shadow: 5px 5px 72px rgba(30, 46, 50, 0.5);
+  color: #040605;
+}
+@media screen and (min-width: 55em) {
+  .calendar-contain {
+    margin: auto;
+    top: 5%;
+  }
+}
+
+.title-bar {
+  background: #f5f7f6;
+}
+.title-bar:after {
+  display: table;
+  clear: both;
+}
+
+@media screen and (min-width: 55em) {
+  .title-bar__month {
+    width: 12%;
+  }
+}
+.title-bar__month:after {
+  content: "";
+  display: inline;
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  right: 0;
+  top: 5px;
+  margin: auto;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  transform: rotate(135deg);
+}
+
+.calendar__sidebar {
+  width: 100%;
+  margin: 0 auto;
+  float: none;
+  background: linear-gradient(120deg, #eff3f3, #e1e7e8);
+  padding-bottom: 0.7rem;
+}
+@media screen and (min-width: 55em) {
+  .calendar__sidebar {
+    position: absolute;
+    height: 100%;
+    width: 30%;
+    float: left;
+    margin-bottom: 0;
+  }
+}
+
+.calendar__sidebar .content {
+  padding: 2rem 1.5rem 2rem 4rem;
+  color: #040605;
+}
+
+.sidebar__heading {
+  font-size: 1.2rem;
+  font-weight: bold;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-bottom: 3rem;
+  margin-top: 1rem;
+}
+.sidebar__heading span {
+  float: right;
+  font-weight: 300;
+}
+
+.calendar__heading-highlight {
+  color: #2d444a;
+  font-weight: 900;
+}
+
+.calendar__days {
+  display: flex;
+  flex-flow: column wrap;
+  align-items: stretch;
+  width: 100%;
+  float: none;
+  min-height: 580px;
+  height: 100%;
+  font-size: 12px;
+  padding: 0.8rem;
+  background: #f5f7f6;
+  /* background: radial-gradient(circle, #eeaeca 0%, #94bbe9 100%); */
+}
+@media screen and (min-width: 55em) {
+  .calendar__days {
+    width: 70%;
+    float: right;
+  }
+}
+
+.calendar__top-bar {
+  display: flex;
+  flex: 45px 0 0;
+}
+
+.top-bar__days {
+  width: 100%;
+  padding: 0 5px;
+  color: #2d4338;
+  font-weight: 100;
+  -webkit-font-smoothing: subpixel-antialiased;
+  font-size: 1rem;
+}
+
+.calendar__day__container {
+  position: relative;
+}
+
+.calendar__day {
+  height: 120px;
+  padding: 0.7rem 0.5rem;
+  border-right: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 10px;
+}
+
+.divider_div {
+  overflow: hidden;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  /* background: #feec9b; */
+  box-sizing: border-box;
+  /* background: rgba(255, 255, 255, 0.25); */
+  background: #ffffff50;
+  /* background: radial-gradient(circle, #eeaeca 0%, #94bbe9 100%); */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  transform: scale(0.97);
+  z-index: 1;
+  box-shadow: 0 0 0 1px #fff inset, 0 0.3em 1.3em -0.5em #000;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.divider {
+  flex: 1;
+  height: 1px;
+  border: none;
+  opacity: 0;
+  color: #040605;
+}
+
+.divider_div .divider {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  opacity: 1;
+}
+
+.divider_div .divider > span {
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 0.7;
+}
+
+.divider_div .divider:last-child {
+  border-bottom: none;
+}
+
+.divider:hover {
+  background: #feec9b70;
+}
+
+.activeBackground {
+  background: #feec9b70;
+}
+
+.no-border {
+  border-right: none;
+}
+
+.calendar__date {
+  color: #040605;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 0.7;
+}
+@media screen and (min-width: 55em) {
+  .calendar__date {
+    font-size: 1.2rem;
+  }
+}
+
+.inactive .calendar__date,
+.inactive .task-count,
+.inactive .divider {
+  color: #c6c6c6;
+}
+.today .calendar__date,
+.today .divider {
+  color: #fd588a;
+}
+
+.calendar__task {
+  color: #040605;
+  display: flex;
+  font-size: 0.8rem;
+}
+@media screen and (min-width: 55em) {
+  .calendar__task {
+    font-size: 1rem;
+  }
+}
+.calendar__task--today {
+  color: #fd588a;
+}
