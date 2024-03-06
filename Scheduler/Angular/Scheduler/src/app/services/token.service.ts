@@ -13,6 +13,7 @@ export class TokenService {
   private readonly thresholdTime: number = 30000;
   private jwtHelper: JwtHelperService;
   tokenExpiryTimer: any;
+  baseURL = 'http://192.168.1.245:3000/api/';
 
   constructor(
     private apiService: ApiService,
@@ -37,16 +38,14 @@ export class TokenService {
 
   fetchToken(email: string): Observable<any> {
     return from(
-      this.apiService.getAllData(
-        'http://localhost:3000/api/sign/token?email=' + email
-      )
+      this.apiService.getAllData(this.baseURL + 'sign/token?email=' + email)
     );
   }
 
   refreshToken(email: string): Observable<any> {
     return from(
       this.apiService.getAllData(
-        'http://localhost:3000/api/sign/refreshToken?email=' + email
+        this.baseURL + 'sign/refreshToken?email=' + email
       )
     );
   }
@@ -54,7 +53,7 @@ export class TokenService {
   clearToken(email: string): Observable<any> {
     return from(
       this.apiService.getAllData(
-        'http://localhost:3000/api/sign/clearToken?email=' + email
+        this.baseURL + 'sign/clearToken?email=' + email
       )
     );
   }

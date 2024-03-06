@@ -72,11 +72,11 @@ app.on("ready", function () {
   });
 });
 
-// app.use(
-//   "/api/fetchDoctors",
-//   authRestrictionService.verifyToken,
-//   require("./server/routes/fetchDoctors.routes")
-// );
+app.use(
+  "/api/fetchDoctors",
+  authRestrictionService.verifyToken,
+  require("./server/routes/fetchDoctors.routes")
+);
 app.use("/api/sign", require("./server/routes/sign.routes"));
 
 var server;

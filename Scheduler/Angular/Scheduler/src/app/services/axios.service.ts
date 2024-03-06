@@ -18,7 +18,7 @@ export class AxiosService {
 
   private setupInterceptors() {
     this.axios.interceptors.request.use(function (config) {
-      // config.withCredentials = true;
+      config.withCredentials = true;
       return config;
     });
 
@@ -27,10 +27,10 @@ export class AxiosService {
         return response;
       },
       (error: AxiosError) => {
-        // if (error.response?.status === 401 || error.response?.status === 403) {
-        //   window.sessionStorage.clear();
-        //   this.router.navigate(['/']);
-        // }
+        if (error.response?.status === 401 || error.response?.status === 403) {
+          window.sessionStorage.clear();
+          this.router.navigate(['/login']);
+        }
         return Promise.reject(error);
       }
     );
