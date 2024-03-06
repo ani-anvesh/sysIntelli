@@ -60,7 +60,7 @@ async function signin(req, res) {
     const token = jwt.sign({ email: email }, config.secret, {
       algorithm: "HS256",
       allowInsecureKeySizes: true,
-      expiresIn: 120,
+      expiresIn: 60,
     });
 
     req.session.token = token;
