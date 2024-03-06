@@ -49,7 +49,7 @@ public class DoctorService {
         // Check if the date is before today
         if (date.isBefore(LocalDate.now())) {
             // If so, return slots with zero availability
-            slotsForDate.add(new SlotInfo(date, (long) 0, "", "", ""));
+            slotsForDate.add(new SlotInfo((long) 0,date, (long) 0, "", "", ""));
             return slotsForDate;
         }
 
@@ -101,6 +101,7 @@ public class DoctorService {
         return scheduleSlots.stream().map(this::createSlotInfoFromSchedule).collect(Collectors.toList());
     }
 
+
     private List<DayOfWeek> getDaysWithoutSlotsInSchedule(Long doctorId, LocalDate date) {
         List<DayOfWeek> daysWithoutSlots = new ArrayList<>();
         DayOfWeek dayOfWeek = date.getDayOfWeek();
@@ -124,14 +125,16 @@ public class DoctorService {
         return slotsForDate;
     }
 
+
     private SlotInfo createSlotInfoFromSchedule(Schedule schedule) {
         Shift shift = schedule.getShift();
-        return new SlotInfo(schedule.getDate(), schedule.getAvailableSlots(), shift.getShiftTiming(), shift.getStartTime(), shift.getEndTime());
+        return new SlotInfo(shift.getShiftId(), schedule.getDate(), schedule.getAvailableSlots(), shift.getShiftTiming(), shift.getStartTime(), shift.getEndTime());
     }
 
     private SlotInfo createSlotInfoFromWeeklySchedule(WeeklySchedule weeklySchedule, LocalDate date) {
         Shift shift = weeklySchedule.getShift();
-        return new SlotInfo(date.with(TemporalAdjusters.nextOrSame(DayOfWeek.valueOf(weeklySchedule.getDayOfWeek().toUpperCase()))), 
+        return new SlotInfo(shift.getShiftId(), date.with(TemporalAdjusters.nextOrSame(DayOfWeek.valueOf(weeklySchedule.getDayOfWeek().toUpperCase()))), 
                             weeklySchedule.getAvailableSlots(), shift.getShiftTiming(), shift.getStartTime(), shift.getEndTime());
     }
+
 }

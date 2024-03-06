@@ -20,13 +20,16 @@ import com.sysintelli.appointmentScheduler.service.DoctorService;
 class DoctorController {
     @Autowired
     private DoctorService doctorService;
+    
+//    @Autowired
+//    private SlotService slotService;
 
     @GetMapping("/doctorsList")
     public List<Doctor> getAllDoctors() {
         return doctorService.getAllDoctors();
     }
 
-    @GetMapping("/totalAvailableSlots/{doctorId}")
+    @GetMapping("/{doctorId}/totalAvailableSlots")
     public ResponseEntity<List<SlotInfo>> getTotalAvailableSlotsByDay(
             @PathVariable Long doctorId,
             @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
@@ -35,4 +38,12 @@ class DoctorController {
         List<SlotInfo> totalSlotsByDay = doctorService.getTotalAvailableSlotsByDay(doctorId, startDate, endDate);
         return ResponseEntity.ok(totalSlotsByDay);
     }
+//    @GetMapping("/{doctorId}/slotInfo")
+//    public SlotTimeInfo getSlotDetails(
+//    		@PathVariable Long doctorId,
+//    		@RequestParam("date") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate date,
+//    		@RequestParam("slotId") Long slotId){
+//    	return slotService.getSlotTimeInfo(doctorId,date,slotId);
+//    	
+//    }
 }
