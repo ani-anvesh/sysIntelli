@@ -1,10 +1,10 @@
-package com.sysintelli.pdfGenerator;
+package com.sysintelli.appointmentScheduler;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class PdfGeneratorApplicationTests {
+class AppointmentSchedulerApplicationTests {
 
 	@Test
 	void contextLoads() {
