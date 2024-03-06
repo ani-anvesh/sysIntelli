@@ -61,7 +61,11 @@
         </div>
         <div class="slots" [style.gridTemplateRows]="getEventColumnTemplate()">
           <div *ngFor="let slot of timeSlotData" class="slot">
-            <span>{{ slot.startTime }} - {{ slot.endTime }}</span>
+            <span>{{ slot.startTime }} - {{ slot.endTime }} </span>
+            <i
+              class="bi bi-node-plus-fill"
+              (click)="slotConformation(slot)"
+            ></i>
           </div>
         </div>
       </div>
@@ -133,3 +137,19 @@
     </ng-container>
   </section>
 </div>
+
+<p-confirmDialog
+  [style]="{ width: '30vw' }"
+  key="positionDialog"
+  position="top-right"
+  [baseZIndex]="10000"
+  rejectButtonStyleClass="p-button-outlined"
+></p-confirmDialog>
+
+<p-confirmDialog
+  [style]="{ width: '30vw' }"
+  key="slotConfirmDialougeDialog"
+  position="top-right"
+  [baseZIndex]="10000"
+  rejectButtonStyleClass="p-button-outlined"
+></p-confirmDialog>

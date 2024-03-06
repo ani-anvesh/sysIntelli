@@ -1,6 +1,9 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import * as _ from 'lodash';
 import * as moment from 'moment';
+import { ConfirmationService } from 'primeng/api';
+import { ApiService } from 'src/app/services/api.service';
+import { TokenService } from 'src/app/services/token.service';
 
 @Component({
   selector: 'app-full-calendar',
@@ -30,7 +33,11 @@ export class FullCalendarComponent implements OnInit {
 
   timeMarkers: string[] = [];
 
-  constructor() {
+  constructor(
+    private tokenService: TokenService,
+    private confirmationService: ConfirmationService,
+    private apiService: ApiService
+  ) {
     this.monthOptions = this.getMonthsInYear(moment().year());
     this.generateTimeMarkers();
     this.generateTimeSlots();
@@ -162,7 +169,43 @@ export class FullCalendarComponent implements OnInit {
     this.generateCalendar(moment(month, 'MMMM').month());
   }
 
+  slotConformation(slot: any) {
+    this.confirmationService.confirm({
+      message:
+        'Are you sure you want to book ' +
+        slot.startTime +
+        ' to ' +
+        slot.endTime +
+        ' slot?',
+      header: 'Confimation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptIcon: 'none',
+      rejectIcon: 'none',
+      acceptLabel: 'Yes',
+      rejectLabel: 'No',
+      rejectButtonStyleClass: 'p-button-text',
+      accept: () => {},
+      reject: () => {},
+      key: 'slotConfirmDialougeDialog',
+    });
+  }
+
+  async fetchDoctors() {
+    await this.apiService
+      .getAllData('http://localhost:3000/api/fetchDoctors/all')
+      .then((res) => {
+        if (res) {
+          console.log(res);
+        }
+      })
+      .catch((error) => {
+        return console.error('Error fetching receipt names:', error);
+      });
+  }
+
   ngOnInit(): void {
     this.generateCalendar(moment().month());
+    this.tokenService.startTokenExpiryMonitoring();
+    this.fetchDoctors();
   }
 }

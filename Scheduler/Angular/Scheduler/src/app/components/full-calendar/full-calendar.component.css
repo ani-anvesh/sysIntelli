@@ -53,7 +53,20 @@ html {
   margin: 0.1rem;
   background: #ffffff50;
   border-bottom: 1px solid rgba(0, 0, 0, 0);
-  /* position: relative; */
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+  align-items: center;
+}
+
+.slot > i {
+  font-size: xx-large;
+  color: grey;
+  padding-left: 5px;
+}
+
+.slot > i:hover {
+  color: #44476a;
 }
 
 .slot:hover {
