@@ -36,8 +36,8 @@ app.use(
 );
 
 const options = {
-  key: fs.readFileSync("./server/openssl/server.key"),
-  cert: fs.readFileSync("./server/openssl/server.crt"),
+  key: fs.readFileSync("./server/openssl/server_office.key"),
+  cert: fs.readFileSync("./server/openssl/server_office.crt"),
 };
 
 // app.use(express.static(process.env.baseURL + "/"));
