@@ -8,6 +8,12 @@ var cors = require("cors");
 const cookieSession = require("cookie-session");
 authRestrictionService = require("./utils/authJWT");
 
+const DOMAINS = {
+  HOME: "192.168.1.245",
+  OFFICE: "192.168.1.173",
+  LOCAL: "localhost",
+};
+
 const APPLICATION_PORT = 3000;
 // const compression = require("compression")
 // var cookieParser=require("cookie-parses")
@@ -29,7 +35,7 @@ app.use(
     name: "JWT-session",
     keys: ["COOKIE_SECRET"], // should use as secret environment variable
     httpOnly: true,
-    domain: "192.168.1.245",
+    domain: DOMAINS.OFFICE,
     sameSite: "none",
     secure: true,
   })
