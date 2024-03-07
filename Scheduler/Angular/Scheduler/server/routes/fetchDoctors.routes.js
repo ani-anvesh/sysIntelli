@@ -9,8 +9,8 @@ router.get("/all", async (req, res) => {
     instance
       .get(ROUTE)
       .then((response) => {
-        console.log(response.data); // Process the response data
-        res.send();
+        // console.log(response.data); // Process the response data
+        res.send(response.data);
       })
       .catch((error) => {
         console.error(error); // Handle any errors
