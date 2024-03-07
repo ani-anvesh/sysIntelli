@@ -26,6 +26,8 @@ export class FullCalendarComponent implements OnInit {
   selectedShift: string = '';
   timeSlotData: any = [];
   monthOptions: string[] = [];
+  doctorOptions: any = [];
+  selectedDoctor: any = '';
   selectedMonth: any = moment().startOf('month').format('MMMM');
   selectedDay: any = moment().format('dddd');
   selectedDate: any = moment().date();
@@ -194,9 +196,11 @@ export class FullCalendarComponent implements OnInit {
   async fetchDoctors() {
     await this.apiService
       .getAllData(DOMAINS.OFFICE + 'fetchDoctors/all')
-      .then((res) => {
+      .then((res: any) => {
         if (res) {
           console.log(res);
+          this.doctorOptions = res;
+          this.selectedDoctor = res[0].name;
         }
       })
       .catch((error) => {
