@@ -28,7 +28,7 @@ public class SlotService {
         List<SlotTimeInfo> slotTimeInfos = new ArrayList<>();
         
         // Find schedule for the given doctor, date, and shift
-        Schedule schedule = scheduleRepository.findScheduleByDoctorDoctorIdAndDateAndShiftId(doctorId, date, shiftId);
+        Schedule schedule = scheduleRepository.findScheduleByDoctorDoctorIdAndDateAndShiftShiftId(doctorId, date, shiftId);
         if (schedule != null) {
             // Retrieve slots associated with the schedule
             List<Slot> slots = slotRepository.findSlotsBySchedule(schedule);

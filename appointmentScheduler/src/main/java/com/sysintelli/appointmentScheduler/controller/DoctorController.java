@@ -45,9 +45,9 @@ class DoctorController {
     public ResponseEntity<List<SlotTimeInfo>> getSlotDetails(
             @PathVariable Long doctorId,
             @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam("slotId") Long slotId) {
+            @RequestParam("shiftId") Long shiftId) {
 
-        List<SlotTimeInfo> slotDetails = slotService.getSlotTimeInfoForDoctor(doctorId, date, slotId);
+        List<SlotTimeInfo> slotDetails = slotService.getSlotTimeInfoForDoctor(doctorId, date, shiftId);
         if (slotDetails.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
