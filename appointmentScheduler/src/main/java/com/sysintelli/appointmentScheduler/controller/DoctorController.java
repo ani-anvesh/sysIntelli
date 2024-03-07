@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,16 +14,18 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.sysintelli.appointmentScheduler.configuration.SlotInfo;
+import com.sysintelli.appointmentScheduler.configuration.SlotTimeInfo;
 import com.sysintelli.appointmentScheduler.model.Doctor;
 import com.sysintelli.appointmentScheduler.service.DoctorService;
+import com.sysintelli.appointmentScheduler.service.SlotService;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 class DoctorController {
     @Autowired
     private DoctorService doctorService;
     
-//    @Autowired
-//    private SlotService slotService;
+    @Autowired
+    private SlotService slotService;
 
     @GetMapping("/doctorsList")
     public List<Doctor> getAllDoctors() {
@@ -38,12 +41,17 @@ class DoctorController {
         List<SlotInfo> totalSlotsByDay = doctorService.getTotalAvailableSlotsByDay(doctorId, startDate, endDate);
         return ResponseEntity.ok(totalSlotsByDay);
     }
-//    @GetMapping("/{doctorId}/slotInfo")
-//    public SlotTimeInfo getSlotDetails(
-//    		@PathVariable Long doctorId,
-//    		@RequestParam("date") @DateTimeFormat (iso = DateTimeFormat.ISO.DATE) LocalDate date,
-//    		@RequestParam("slotId") Long slotId){
-//    	return slotService.getSlotTimeInfo(doctorId,date,slotId);
-//    	
-//    }
+    @GetMapping("/{doctorId}/slotInfo")
+    public ResponseEntity<List<SlotTimeInfo>> getSlotDetails(
+            @PathVariable Long doctorId,
+            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+            @RequestParam("slotId") Long slotId) {
+
+        List<SlotTimeInfo> slotDetails = slotService.getSlotTimeInfoForDoctor(doctorId, date, slotId);
+        if (slotDetails.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(slotDetails, HttpStatus.OK);
+        }
+    }
 }
