@@ -4,6 +4,9 @@
   <section class="title-bar position-relative d-table w-100 mb-0 p-2">
     <!-- <span class="title-bar__month"> Month </span> -->
     <div class="d-flex">
+      <!-- 
+          (click)="monthSelected(doctor)"
+       -->
       <a
         class="nav-link dropdown-toggle"
         href="#"
@@ -12,14 +15,15 @@
         data-bs-toggle="dropdown"
         aria-expanded="false"
       >
-        <i class="bi bi-person-fill"></i> Doctor: {{ selectedMonth }}
+        <i class="bi bi-person-fill"></i> Doctor:
+        {{ selectedDoctor }}
       </a>
       <ul
         class="dropdown-menu dropdown-menu-dark"
         aria-labelledby="navbarDarkDropdownMenuLink"
       >
-        <li *ngFor="let month of monthOptions" (click)="monthSelected(month)">
-          <a class="dropdown-item">{{ month }}</a>
+        <li *ngFor="let doctor of doctorOptions">
+          <a class="dropdown-item">{{ doctor.name }}</a>
         </li>
       </ul>
       <a
