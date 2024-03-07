@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class SlotInfo {
+	private  Long shiftId;
     private LocalDate date;
     private Long availableSlots;
     private String shiftTiming;

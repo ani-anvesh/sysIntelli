@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.sysintelli.appointmentScheduler.model.Schedule;
 import com.sysintelli.appointmentScheduler.model.Slot;
 @Repository
 public interface SlotRepository extends JpaRepository<Slot, Long> {
@@ -17,5 +18,8 @@ public interface SlotRepository extends JpaRepository<Slot, Long> {
 	    List<LocalDate> findAvailableDatesForDoctorThisWeek(@Param("doctorId") Long doctorId,
 	                                                        @Param("startDate") LocalDate startDate,
 	                                                        @Param("endDate") LocalDate endDate);
+	 
+
+	List<Slot> findSlotsBySchedule(Schedule schedule);
 
 }

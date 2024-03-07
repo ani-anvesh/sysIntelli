@@ -2,12 +2,11 @@ var express = require("express");
 var app = express();
 var chalk = require("chalk");
 var figlet = require("figlet");
-var http = require("http");
+var fs = require("fs");
+var https = require("https");
 var cors = require("cors");
 const cookieSession = require("cookie-session");
 authRestrictionService = require("./utils/authJWT");
-
-var options = {};
 
 const APPLICATION_PORT = 3000;
 // const compression = require("compression")
@@ -21,7 +20,7 @@ app.use(express.urlencoded({ extended: true, limmit: "50mb" }));
 // app.use(cors());
 app.use(
   cors({
-    origin: "http://localhost:4200", // Update this with your frontend origin
+    origin: true, // Update this with your frontend origin
     credentials: true,
   })
 );
@@ -30,15 +29,16 @@ app.use(
     name: "JWT-session",
     keys: ["COOKIE_SECRET"], // should use as secret environment variable
     httpOnly: true,
+    domain: "192.168.1.245",
+    sameSite: "none",
+    secure: true,
   })
 );
-app.options(
-  "*",
-  cors({
-    origin: "http://localhost:4200", // Update this with your frontend origin
-    credentials: true,
-  })
-);
+
+const options = {
+  key: fs.readFileSync("./server/openssl/server.key"),
+  cert: fs.readFileSync("./server/openssl/server.crt"),
+};
 
 // app.use(express.static(process.env.baseURL + "/"));
 
@@ -81,9 +81,9 @@ app.use("/api/sign", require("./server/routes/sign.routes"));
 
 var server;
 if (process.argv.length == 2) {
-  server = http.createServer(options, app);
+  server = https.createServer(options, app);
 } else {
-  server = http.createServer(app);
+  server = https.createServer(options, app);
 }
 
 server.listen(APPLICATION_PORT, () => {

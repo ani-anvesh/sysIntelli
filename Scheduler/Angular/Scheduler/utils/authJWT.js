@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const config = require("../config/auth.config.js");
 
 verifyToken = (req, res, next) => {
+  // console.log(req);
   let token = req.session.token;
 
   if (!token) {
