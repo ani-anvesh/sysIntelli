@@ -8,8 +8,9 @@ import {
   RouterStateSnapshot,
 } from '@angular/router';
 import { TokenService } from './token.service';
+import { DOMAINS } from 'utils/domains';
 
-const AUTH_API = 'http://192.168.1.245:3000/api/sign/';
+const AUTH_API = DOMAINS.OFFICE + 'sign/';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),

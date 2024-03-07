@@ -4,6 +4,7 @@ import { Observable, firstValueFrom, from, map } from 'rxjs';
 import { ApiService } from './api.service';
 import { ConfirmationService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { DOMAINS } from 'utils/domains';
 
 const USER_KEY = 'auth-user';
 @Injectable({
@@ -13,7 +14,7 @@ export class TokenService {
   private readonly thresholdTime: number = 30000;
   private jwtHelper: JwtHelperService;
   tokenExpiryTimer: any;
-  baseURL = 'http://192.168.1.245:3000/api/';
+  baseURL = DOMAINS.OFFICE;
 
   constructor(
     private apiService: ApiService,

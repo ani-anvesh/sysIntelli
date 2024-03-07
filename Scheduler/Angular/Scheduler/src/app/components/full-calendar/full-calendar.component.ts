@@ -4,6 +4,7 @@ import * as moment from 'moment';
 import { ConfirmationService } from 'primeng/api';
 import { ApiService } from 'src/app/services/api.service';
 import { TokenService } from 'src/app/services/token.service';
+import { DOMAINS } from 'utils/domains';
 
 @Component({
   selector: 'app-full-calendar',
@@ -192,7 +193,7 @@ export class FullCalendarComponent implements OnInit {
 
   async fetchDoctors() {
     await this.apiService
-      .getAllData('http://localhost:3000/api/fetchDoctors/all')
+      .getAllData(DOMAINS.OFFICE + 'fetchDoctors/all')
       .then((res) => {
         if (res) {
           console.log(res);
