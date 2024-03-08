@@ -35,7 +35,7 @@ app.use(
     name: "JWT-session",
     keys: ["COOKIE_SECRET"], // should use as secret environment variable
     httpOnly: true,
-    domain: DOMAINS.OFFICE,
+    domain: DOMAINS.HOME,
     sameSite: "none",
     secure: true,
   })
