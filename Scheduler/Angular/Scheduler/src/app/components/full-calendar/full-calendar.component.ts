@@ -250,27 +250,30 @@ export class FullCalendarComponent implements OnInit {
       });
   }
 
-  // http://localhost:8080/89780/slotInfo?date=2024-03-08&shiftId=101
-
   async totalAvailableSlots(shift: any) {
-    console.log(shift);
     await this.apiService
       .getAllData(
-        DOMAINS.HOME + 'fetchShifts/89780/slotInfo?date=' + shift.date
+        DOMAINS.HOME +
+          'fetchShifts/89780/slotInfo?date=' +
+          shift.date +
+          '&shiftId=' +
+          shift.shiftId
       )
       .then((res: any) => {
         if (res) {
-          // let groupedShifts = _.groupBy(res, 'date');
-          // this.allDays.forEach((obj: any) => {
-          //   if (groupedShifts[obj.id]) {
-          //     obj.shifts = groupedShifts[obj.id];
-          //   }
-          // });
+          console.log(res);
+        }
+      })
+      .catch((error) => {
+        return console.error('Error fetching receipt names:', error);
+      });
+  }
 
-          // this.allDays.forEach((obj: any) => {
-          //   const slotsAvailable = _.sumBy(obj.shifts, 'availableSlots');
-          //   obj.slotsAvailable = slotsAvailable;
-          // });
+  async AllSlots() {
+    await this.apiService
+      .getAllData(DOMAINS.HOME + 'allSlots')
+      .then((res: any) => {
+        if (res) {
           console.log(res);
         }
       })
