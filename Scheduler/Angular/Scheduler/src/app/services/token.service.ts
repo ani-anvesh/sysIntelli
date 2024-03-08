@@ -14,7 +14,7 @@ export class TokenService {
   private readonly thresholdTime: number = 30000;
   private jwtHelper: JwtHelperService;
   tokenExpiryTimer: any;
-  baseURL = DOMAINS.OFFICE;
+  baseURL = DOMAINS.HOME;
 
   constructor(
     private apiService: ApiService,

@@ -23,7 +23,9 @@
         aria-labelledby="navbarDarkDropdownMenuLink"
       >
         <li *ngFor="let doctor of doctorOptions">
-          <a class="dropdown-item">{{ doctor.name }}</a>
+          <a class="dropdown-item"
+            >{{ doctor.name }} - {{ doctor.specialization }}</a
+          >
         </li>
       </ul>
       <a
@@ -118,13 +120,7 @@
             <div class="position-absolute divider_div" *ngIf="day.dateSelect">
               <div
                 (click)="shiftSelectClick(day, shift)"
-                *ngFor="
-                  let shift of [
-                    '09:00 - 12:00 : (2)',
-                    '14:00 - 17:00 : (3)',
-                    '19:00 - 22:00 : (5)'
-                  ]
-                "
+                *ngFor="let shift of day.shifts"
                 class="divider"
                 [ngClass]="{
                   inactive: day.inactive,
@@ -132,7 +128,12 @@
                   activeBackground: selectedShift == shift
                 }"
               >
-                <span class="pe-none">{{ shift }}</span>
+                <span class="pe-none"
+                  >{{ shift.startTime.slice(0, 5) }} -
+                  {{ shift.endTime.slice(0, 5) }} ({{
+                    shift.availableSlots
+                  }})</span
+                >
               </div>
             </div>
           </div>

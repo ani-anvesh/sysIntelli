@@ -10,7 +10,7 @@ import {
 import { TokenService } from './token.service';
 import { DOMAINS } from 'utils/domains';
 
-const AUTH_API = DOMAINS.OFFICE + 'sign/';
+const AUTH_API = DOMAINS.HOME + 'sign/';
 
 const httpOptions = {
   headers: new HttpHeaders({ 'Content-Type': 'application/json' }),

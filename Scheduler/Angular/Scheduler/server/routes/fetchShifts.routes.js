@@ -3,10 +3,7 @@ const instance = require("../services/axiosService");
 
 var ROUTE = "/totalAvailableSlots";
 
-// Define your route
 router.get("/:doctorId/totalAvailableSlots", async (req, res) => {
-  console.log(req.query);
-  console.log(req.params);
   const { startDate, endDate } = req.query;
   let url =
     "/" +
@@ -20,11 +17,11 @@ router.get("/:doctorId/totalAvailableSlots", async (req, res) => {
     instance
       .get(url)
       .then((response) => {
-        console.log(response.data); // Process the response data
+        console.log(response.data);
         res.send(response.data);
       })
       .catch((error) => {
-        console.error(error); // Handle any errors
+        console.error(error);
       });
   } catch (error) {
     console.error("Error fetching data:", error);

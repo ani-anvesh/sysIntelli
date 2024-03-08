@@ -3,17 +3,15 @@ const instance = require("../services/axiosService");
 
 const ROUTE = "/doctorsList";
 
-// Define your route
 router.get("/all", async (req, res) => {
   try {
     instance
       .get(ROUTE)
       .then((response) => {
-        // console.log(response.data); // Process the response data
         res.send(response.data);
       })
       .catch((error) => {
-        console.error(error); // Handle any errors
+        console.error(error);
       });
   } catch (error) {
     console.error("Error fetching data:", error);

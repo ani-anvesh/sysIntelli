@@ -26,14 +26,14 @@ app.use(express.urlencoded({ extended: true, limmit: "50mb" }));
 // app.use(cors());
 app.use(
   cors({
-    origin: true, // Update this with your frontend origin
+    origin: true,
     credentials: true,
   })
 );
 app.use(
   cookieSession({
     name: "JWT-session",
-    keys: ["COOKIE_SECRET"], // should use as secret environment variable
+    keys: ["COOKIE_SECRET"],
     httpOnly: true,
     domain: DOMAINS.HOME,
     sameSite: "none",
@@ -87,6 +87,11 @@ app.use(
   "/api/fetchShifts",
   authRestrictionService.verifyToken,
   require("./server/routes/fetchShifts.routes")
+);
+app.use(
+  "/api/fetchSlots",
+  authRestrictionService.verifyToken,
+  require("./server/routes/fetchSlots.routes")
 );
 app.use("/api/sign", require("./server/routes/sign.routes"));
 
