@@ -1,16 +1,24 @@
 const router = require("express").Router();
 const instance = require("../services/axiosService");
 
-const ROUTE = "/totalAvailableSlots";
+var ROUTE = "/totalAvailableSlots";
 
 // Define your route
-router.get("/totalAvailableSlots", async (req, res) => {
+router.get("/:doctorId/totalAvailableSlots", async (req, res) => {
   console.log(req.query);
+  console.log(req.params);
   const { startDate, endDate } = req.query;
-  ROUTE = ROUTE + "?startDate=" + startDate + "&endDate=" + endDate;
+  let url =
+    "/" +
+    req.params.doctorId +
+    ROUTE +
+    "?startDate=" +
+    startDate +
+    "&endDate=" +
+    endDate;
   try {
     instance
-      .get(ROUTE)
+      .get(url)
       .then((response) => {
         console.log(response.data); // Process the response data
         res.send(response.data);

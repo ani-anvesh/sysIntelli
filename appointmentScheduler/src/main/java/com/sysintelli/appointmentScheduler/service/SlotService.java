@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import com.sysintelli.appointmentScheduler.configuration.SlotTimeInfo;
@@ -24,26 +26,29 @@ public class SlotService {
     @Autowired
     private SlotTimingRepository slotTimingRepository;
 
-    public List<SlotTimeInfo> getSlotTimeInfoForDoctor(Long doctorId, LocalDate date, Long shiftId) {
+    public ResponseEntity<List<SlotTimeInfo>> getSlotTimeInfoForDoctor(Long doctorId, LocalDate date, Long shiftId) {
         List<SlotTimeInfo> slotTimeInfos = new ArrayList<>();
         
         // Find schedule for the given doctor, date, and shift
         Schedule schedule = scheduleRepository.findScheduleByDoctorDoctorIdAndDateAndShiftShiftId(doctorId, date, shiftId);
-        if (schedule != null) {
-            // Retrieve slots associated with the schedule
-            List<Slot> slots = slotRepository.findSlotsBySchedule(schedule);
-            // Convert slots into SlotTimeInfo objects
-            for (Slot slot : slots) {
-                SlotTiming slotTiming = slot.getSlotTiming();
-                SlotTimeInfo slotTimeInfo = new SlotTimeInfo();
-                slotTimeInfo.setSlotName(slotTiming.getSlotName());
-                slotTimeInfo.setAvailability(slot.getAvailability());
-                slotTimeInfo.setStartTime(slotTiming.getStartTime());
-                slotTimeInfo.setEndTime(slotTiming.getEndTime());
-                slotTimeInfos.add(slotTimeInfo);
-            }
+        if (schedule == null) {
+            // If schedule is not found, return empty list with HTTP status OK
+            return ResponseEntity.ok(slotTimeInfos);
         }
-        return slotTimeInfos;
+        
+        // Retrieve slots associated with the schedule
+        List<Slot> slots = slotRepository.findSlotsBySchedule(schedule);
+        // Convert slots into SlotTimeInfo objects
+        for (Slot slot : slots) {
+            SlotTiming slotTiming = slot.getSlotTiming();
+            SlotTimeInfo slotTimeInfo = new SlotTimeInfo();
+            slotTimeInfo.setSlotName(slotTiming.getSlotName());
+            slotTimeInfo.setAvailability(slot.getAvailability());
+            slotTimeInfo.setStartTime(slotTiming.getStartTime());
+            slotTimeInfo.setEndTime(slotTiming.getEndTime());
+            slotTimeInfos.add(slotTimeInfo);
+        }
+        
+        return ResponseEntity.ok(slotTimeInfos);
     }
-
 }

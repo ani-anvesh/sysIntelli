@@ -44,14 +44,8 @@ class DoctorController {
     @GetMapping("/{doctorId}/slotInfo")
     public ResponseEntity<List<SlotTimeInfo>> getSlotDetails(
             @PathVariable Long doctorId,
-            @RequestParam("date") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
-            @RequestParam("shiftId") Long shiftId) {
-
-        List<SlotTimeInfo> slotDetails = slotService.getSlotTimeInfoForDoctor(doctorId, date, shiftId);
-        if (slotDetails.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        } else {
-            return new ResponseEntity<>(slotDetails, HttpStatus.OK);
-        }
+            @RequestParam LocalDate date,
+            @RequestParam Long shiftId) {
+        return slotService.getSlotTimeInfoForDoctor(doctorId, date, shiftId);
     }
 }
