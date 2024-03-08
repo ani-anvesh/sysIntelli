@@ -83,6 +83,11 @@ app.use(
   authRestrictionService.verifyToken,
   require("./server/routes/fetchDoctors.routes")
 );
+app.use(
+  "/api/fetchShifts",
+  authRestrictionService.verifyToken,
+  require("./server/routes/fetchShifts.routes")
+);
 app.use("/api/sign", require("./server/routes/sign.routes"));
 
 var server;

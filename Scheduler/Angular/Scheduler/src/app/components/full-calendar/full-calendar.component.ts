@@ -208,9 +208,28 @@ export class FullCalendarComponent implements OnInit {
       });
   }
 
+  async totalAvailableShifts() {
+    await this.apiService
+      .getAllData(
+        DOMAINS.LOCAL +
+          'fetchShifts/totalAvailableSlots?startDate=2024-03-11&endDate=2024-03-14'
+      )
+      .then((res: any) => {
+        if (res) {
+          console.log(res);
+          // this.doctorOptions = res;
+          // this.selectedDoctor = res[0].name;
+        }
+      })
+      .catch((error) => {
+        return console.error('Error fetching receipt names:', error);
+      });
+  }
+
   ngOnInit(): void {
     this.generateCalendar(moment().month());
     this.tokenService.startTokenExpiryMonitoring();
     this.fetchDoctors();
+    this.totalAvailableShifts();
   }
 }
