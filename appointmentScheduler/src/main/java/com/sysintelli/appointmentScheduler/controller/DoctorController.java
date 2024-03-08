@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.sysintelli.appointmentScheduler.configuration.SlotInfo;
 import com.sysintelli.appointmentScheduler.configuration.SlotTimeInfo;
 import com.sysintelli.appointmentScheduler.model.Doctor;
+import com.sysintelli.appointmentScheduler.model.SlotTiming;
 import com.sysintelli.appointmentScheduler.service.DoctorService;
 import com.sysintelli.appointmentScheduler.service.SlotService;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
@@ -30,6 +31,10 @@ class DoctorController {
     @GetMapping("/doctorsList")
     public List<Doctor> getAllDoctors() {
         return doctorService.getAllDoctors();
+    }
+    @GetMapping("/slotTimingList")
+    public List<SlotTiming> getSlotTimingList() {
+        return slotService.getSlotTimingList();
     }
 
     @GetMapping("/{doctorId}/totalAvailableSlots")

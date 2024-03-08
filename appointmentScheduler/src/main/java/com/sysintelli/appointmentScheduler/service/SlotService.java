@@ -51,4 +51,8 @@ public class SlotService {
         
         return ResponseEntity.ok(slotTimeInfos);
     }
+
+	public List<SlotTiming> getSlotTimingList() {
+		return slotTimingRepository.findAll();
+	}
 }
