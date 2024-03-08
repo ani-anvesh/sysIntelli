@@ -211,7 +211,7 @@ export class FullCalendarComponent implements OnInit {
   async totalAvailableShifts() {
     await this.apiService
       .getAllData(
-        DOMAINS.LOCAL +
+        DOMAINS.OFFICE +
           'fetchShifts/totalAvailableSlots?startDate=2024-03-11&endDate=2024-03-14'
       )
       .then((res: any) => {

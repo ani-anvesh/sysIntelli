@@ -7,11 +7,12 @@ const ROUTE = "/totalAvailableSlots";
 router.get("/totalAvailableSlots", async (req, res) => {
   console.log(req.query);
   const { startDate, endDate } = req.query;
+  ROUTE = ROUTE + "?startDate=" + startDate + "&endDate=" + endDate;
   try {
     instance
       .get(ROUTE)
       .then((response) => {
-        // console.log(response.data); // Process the response data
+        console.log(response.data); // Process the response data
         res.send(response.data);
       })
       .catch((error) => {
