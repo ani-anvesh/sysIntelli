@@ -28,7 +28,7 @@ router.get("/:doctorId/slotInfo", async (req, res) => {
     "?date=" +
     req.query.date +
     "&shiftId=" +
-    shiftId;
+    req.query.shiftId;
   try {
     instance
       .get(url)
