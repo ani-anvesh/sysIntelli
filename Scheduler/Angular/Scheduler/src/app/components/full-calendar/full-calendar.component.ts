@@ -18,49 +18,12 @@ export class FullCalendarComponent implements OnInit {
   timeSlotData: any = [];
   monthOptions: string[] = [];
   doctorOptions: any = [];
-  selectedDoctor: any = '';
+  selectedDoctor: any = {};
   selectedMonth: any = moment().startOf('month').format('MMMM');
   selectedDay: any = moment().format('dddd');
   selectedDate: any = moment().date();
   slotDuration: number = 15;
-  slotTimings: any = [
-    { slotName: 'slot1', startTime: '09:00', endTime: '09:15' },
-    { slotName: 'slot2', startTime: '09:15', endTime: '09:30' },
-    { slotName: 'slot3', startTime: '09:30', endTime: '09:45' },
-    { slotName: 'slot4', startTime: '09:45', endTime: '10:00' },
-    { slotName: 'slot5', startTime: '10:00', endTime: '10:15' },
-    { slotName: 'slot6', startTime: '10:15', endTime: '10:30' },
-    { slotName: 'slot7', startTime: '10:30', endTime: '10:45' },
-    { slotName: 'slot8', startTime: '10:45', endTime: '11:00' },
-    { slotName: 'slot9', startTime: '11:00', endTime: '11:15' },
-    { slotName: 'slot10', startTime: '11:15', endTime: '11:30' },
-    { slotName: 'slot11', startTime: '11:30', endTime: '11:45' },
-    { slotName: 'slot12', startTime: '11:45', endTime: '12:00' },
-    { slotName: 'slot13', startTime: '14:00', endTime: '14:15' },
-    { slotName: 'slot14', startTime: '14:15', endTime: '14:30' },
-    { slotName: 'slot15', startTime: '14:30', endTime: '14:45' },
-    { slotName: 'slot16', startTime: '14:45', endTime: '15:00' },
-    { slotName: 'slot17', startTime: '15:00', endTime: '15:15' },
-    { slotName: 'slot18', startTime: '15:15', endTime: '15:30' },
-    { slotName: 'slot19', startTime: '15:30', endTime: '15:45' },
-    { slotName: 'slot20', startTime: '15:45', endTime: '16:00' },
-    { slotName: 'slot21', startTime: '16:00', endTime: '16:15' },
-    { slotName: 'slot22', startTime: '16:15', endTime: '16:30' },
-    { slotName: 'slot23', startTime: '16:30', endTime: '16:45' },
-    { slotName: 'slot24', startTime: '16:45', endTime: '17:00' },
-    { slotName: 'slot25', startTime: '19:00', endTime: '19:15' },
-    { slotName: 'slot26', startTime: '19:15', endTime: '19:30' },
-    { slotName: 'slot27', startTime: '19:30', endTime: '19:45' },
-    { slotName: 'slot28', startTime: '19:45', endTime: '20:00' },
-    { slotName: 'slot29', startTime: '20:00', endTime: '20:15' },
-    { slotName: 'slot30', startTime: '20:15', endTime: '20:30' },
-    { slotName: 'slot31', startTime: '20:30', endTime: '20:45' },
-    { slotName: 'slot32', startTime: '20:45', endTime: '21:00' },
-    { slotName: 'slot33', startTime: '21:00', endTime: '21:15' },
-    { slotName: 'slot34', startTime: '21:15', endTime: '21:30' },
-    { slotName: 'slot35', startTime: '21:30', endTime: '21:45' },
-    { slotName: 'slot36', startTime: '21:45', endTime: '22:00' },
-  ];
+  totalSlotDate: any = [];
   // dateSelect: Boolean = false;
 
   timeMarkers: string[] = [];
@@ -71,6 +34,7 @@ export class FullCalendarComponent implements OnInit {
     private apiService: ApiService
   ) {
     this.monthOptions = this.getMonthsInYear(moment().year());
+    this.allSlots();
     this.generateTimeMarkers();
   }
 
@@ -90,7 +54,12 @@ export class FullCalendarComponent implements OnInit {
     this.setTimeMarkers(currentShift);
     this.shiftSelectClick(
       { date: currentTime.date(), day: moment().format('dddd') },
-      { startTime: '09:00', endTime: '12:00', date: currentTime.date() }
+      {
+        startTime: '09:00',
+        endTime: '12:00',
+        date: currentTime.format('YYYY-MM-DD'),
+        shiftId: '101',
+      }
     );
   }
 
@@ -124,17 +93,27 @@ export class FullCalendarComponent implements OnInit {
   }
 
   shiftSelectClick(day: any, shift: any) {
-    this.timeSlotData = [];
     this.selectedShift = shift;
     this.selectedDay = day.day;
     this.selectedDate = day.date;
-    const { startTime, endTime } = shift;
-    this.setTimeMarkers({ startTime, endTime });
+    this.slotMaker();
+  }
+
+  slotMaker() {
+    this.timeSlotData = [];
+    const { startTime, endTime } = this.selectedShift;
+    console.log(this.selectedShift);
+    this.setTimeMarkers({ startTime: startTime, endTime: endTime });
     this.timeSlotData = _.filter(
-      this.slotTimings,
-      (slot) => slot.startTime >= startTime && slot.endTime <= endTime
+      this.totalSlotDate,
+      (slot) =>
+        slot.startTime >= startTime.slice(0, 5) &&
+        slot.endTime <= endTime.slice(0, 5)
     );
-    this.totalAvailableSlots(shift);
+    this.timeSlotData = _.sortBy(this.timeSlotData, (item) => {
+      return moment(item.startTime, 'HH:mm').toDate();
+    });
+    this.totalBookedSlots(this.selectedShift);
   }
 
   chunkArray(array: any[], size: number): any[] {
@@ -165,7 +144,6 @@ export class FullCalendarComponent implements OnInit {
       });
       currentDateIterator.add(1, 'day');
     }
-    console.log(this.allDays);
   }
 
   getMonthsInYear(year: number) {
@@ -179,6 +157,13 @@ export class FullCalendarComponent implements OnInit {
   monthSelected(month: string) {
     this.selectedMonth = month;
     this.generateCalendar(moment(month, 'MMMM').month());
+    this.totalAvailableShifts();
+  }
+
+  doctorSelected(doctor: any) {
+    this.selectedDoctor = doctor;
+    this.generateCalendar(moment(this.selectedMonth, 'MMMM').month());
+    this.totalAvailableShifts();
   }
 
   slotConformation(slot: any) {
@@ -207,9 +192,8 @@ export class FullCalendarComponent implements OnInit {
       .getAllData(DOMAINS.HOME + 'fetchDoctors/all')
       .then((res: any) => {
         if (res) {
-          console.log(res);
           this.doctorOptions = res;
-          this.selectedDoctor = res[0].name;
+          this.doctorSelected(res[3]);
         }
       })
       .catch((error) => {
@@ -225,7 +209,9 @@ export class FullCalendarComponent implements OnInit {
     await this.apiService
       .getAllData(
         DOMAINS.HOME +
-          'fetchShifts/89780/totalAvailableSlots?startDate=' +
+          'fetchShifts/' +
+          this.selectedDoctor.doctorId +
+          '/totalAvailableSlots?startDate=' +
           startDate +
           '&endDate=' +
           endDate
@@ -238,7 +224,6 @@ export class FullCalendarComponent implements OnInit {
               obj.shifts = groupedShifts[obj.id];
             }
           });
-
           this.allDays.forEach((obj: any) => {
             const slotsAvailable = _.sumBy(obj.shifts, 'availableSlots');
             obj.slotsAvailable = slotsAvailable;
@@ -250,18 +235,22 @@ export class FullCalendarComponent implements OnInit {
       });
   }
 
-  async totalAvailableSlots(shift: any) {
+  async totalBookedSlots(shift: any) {
     await this.apiService
       .getAllData(
         DOMAINS.HOME +
-          'fetchShifts/89780/slotInfo?date=' +
+          'fetchSlots/' +
+          this.selectedDoctor.doctorId +
+          '/slotInfo?date=' +
           shift.date +
           '&shiftId=' +
           shift.shiftId
       )
       .then((res: any) => {
         if (res) {
-          console.log(res);
+          this.timeSlotData = _.map(this.timeSlotData, (slot) =>
+            _.merge(slot, _.find(res, { slotName: slot.slotName }))
+          );
         }
       })
       .catch((error) => {
@@ -269,12 +258,16 @@ export class FullCalendarComponent implements OnInit {
       });
   }
 
-  async AllSlots() {
+  async allSlots() {
     await this.apiService
-      .getAllData(DOMAINS.HOME + 'allSlots')
+      .getAllData(DOMAINS.HOME + 'fetchSlots/allSlots')
       .then((res: any) => {
         if (res) {
-          console.log(res);
+          this.totalSlotDate = _.forEach(res, (item) => {
+            item.startTime = item.startTime.slice(0, 5);
+            item.endTime = item.endTime.slice(0, 5);
+          });
+          this.slotMaker();
         }
       })
       .catch((error) => {

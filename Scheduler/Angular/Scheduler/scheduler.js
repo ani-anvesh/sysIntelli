@@ -4,6 +4,7 @@ var chalk = require("chalk");
 var figlet = require("figlet");
 var fs = require("fs");
 var https = require("https");
+var http = require("http");
 var cors = require("cors");
 const cookieSession = require("cookie-session");
 authRestrictionService = require("./utils/authJWT");
@@ -101,6 +102,12 @@ if (process.argv.length == 2) {
 } else {
   server = https.createServer(options, app);
 }
+
+// if (process.argv.length == 2) {
+//   server = http.createServer(app);
+// } else {
+//   server = http.createServer(options, app);
+// }
 
 server.listen(APPLICATION_PORT, () => {
   figlet("Sysintelli", function (err, data) {

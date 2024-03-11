@@ -2,11 +2,7 @@
   class="calendar-contain mt-5 position-relative w-100 overflow-hidden mx-auto my-4"
 >
   <section class="title-bar position-relative d-table w-100 mb-0 p-2">
-    <!-- <span class="title-bar__month"> Month </span> -->
     <div class="d-flex">
-      <!-- 
-          (click)="monthSelected(doctor)"
-       -->
       <a
         class="nav-link dropdown-toggle"
         href="#"
@@ -16,13 +12,16 @@
         aria-expanded="false"
       >
         <i class="bi bi-person-fill"></i> Doctor:
-        {{ selectedDoctor }}
+        {{ selectedDoctor.name }}
       </a>
       <ul
         class="dropdown-menu dropdown-menu-dark"
         aria-labelledby="navbarDarkDropdownMenuLink"
       >
-        <li *ngFor="let doctor of doctorOptions">
+        <li
+          *ngFor="let doctor of doctorOptions"
+          (click)="doctorSelected(doctor)"
+        >
           <a class="dropdown-item"
             >{{ doctor.name }} - {{ doctor.specialization }}</a
           >
@@ -66,9 +65,16 @@
           <p class="date-day">{{ selectedDay }}</p>
         </div>
         <div class="slots" [style.gridTemplateRows]="getEventColumnTemplate()">
-          <div *ngFor="let slot of timeSlotData" class="slot">
-            <span>{{ slot.startTime }} - {{ slot.endTime }} </span>
+          <div
+            *ngFor="let slot of timeSlotData"
+            class="slot"
+            [class.bg-secondary.bg-gradient]="slot.availability == 'booked'"
+          >
+            <span
+              >{{ slot.startTime.slice(0, 5) }} - {{ slot.endTime.slice(0, 5) }}
+            </span>
             <i
+              *ngIf="slot.availability != 'booked'"
               class="bi bi-node-plus-fill"
               (click)="slotConformation(slot)"
             ></i>
