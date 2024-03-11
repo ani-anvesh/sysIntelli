@@ -17,7 +17,6 @@ router.get("/:doctorId/totalAvailableSlots", async (req, res) => {
     instance
       .get(url)
       .then((response) => {
-        console.log(response.data);
         res.send(response.data);
       })
       .catch((error) => {
