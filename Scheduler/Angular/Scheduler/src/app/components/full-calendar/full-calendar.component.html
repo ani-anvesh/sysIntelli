@@ -68,7 +68,7 @@
           <div
             *ngFor="let slot of timeSlotData"
             class="slot"
-            [class.bg-secondary.bg-gradient]="slot.availability == 'booked'"
+            [class.booked_background]="slot.availability == 'booked'"
           >
             <span
               >{{ slot.startTime.slice(0, 5) }} - {{ slot.endTime.slice(0, 5) }}

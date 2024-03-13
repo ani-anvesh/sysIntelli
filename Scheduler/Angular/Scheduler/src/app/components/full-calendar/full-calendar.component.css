@@ -369,3 +369,11 @@ li {
 .calendar__task--today {
   color: #fd588a;
 }
+
+.booked_background {
+  background-color: #d3d3d380;
+}
+
+.booked_background:hover {
+  background-color: #d3d3d380;
+}

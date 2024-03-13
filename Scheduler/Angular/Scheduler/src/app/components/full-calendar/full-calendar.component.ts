@@ -34,8 +34,6 @@ export class FullCalendarComponent implements OnInit {
     private apiService: ApiService
   ) {
     this.monthOptions = this.getMonthsInYear(moment().year());
-    this.allSlots();
-    this.generateTimeMarkers();
   }
 
   generateTimeMarkers() {
@@ -187,14 +185,15 @@ export class FullCalendarComponent implements OnInit {
     });
   }
 
-  async fetchDoctors() {
-    await this.apiService
+  async fetchDoctors(): Promise<any> {
+    return await this.apiService
       .getAllData(DOMAINS.HOME + 'fetchDoctors/all')
       .then((res: any) => {
         if (res) {
           this.doctorOptions = res;
           this.doctorSelected(res[3]);
         }
+        return this.doctorOptions;
       })
       .catch((error) => {
         return console.error('Error fetching receipt names:', error);
@@ -259,7 +258,7 @@ export class FullCalendarComponent implements OnInit {
   }
 
   async allSlots() {
-    await this.apiService
+    return await this.apiService
       .getAllData(DOMAINS.HOME + 'fetchSlots/allSlots')
       .then((res: any) => {
         if (res) {
@@ -267,7 +266,8 @@ export class FullCalendarComponent implements OnInit {
             item.startTime = item.startTime.slice(0, 5);
             item.endTime = item.endTime.slice(0, 5);
           });
-          this.slotMaker();
+          // this.slotMaker();
+          return this.totalSlotDate;
         }
       })
       .catch((error) => {
@@ -275,10 +275,20 @@ export class FullCalendarComponent implements OnInit {
       });
   }
 
-  ngOnInit(): void {
-    this.generateCalendar(moment().month());
-    this.tokenService.startTokenExpiryMonitoring();
-    this.fetchDoctors();
-    this.totalAvailableShifts();
+  async ngOnInit() {
+    try {
+      const [doctors, slots] = await Promise.all([
+        this.fetchDoctors(),
+        this.allSlots(),
+      ]);
+      if (slots) {
+        this.generateCalendar(moment().month());
+        this.tokenService.startTokenExpiryMonitoring();
+        this.generateTimeMarkers();
+      }
+    } catch (error) {
+      console.error('Error occurred:', error);
+      // Handle error appropriately
+    }
   }
 }

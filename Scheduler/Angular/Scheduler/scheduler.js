@@ -95,6 +95,7 @@ app.use(
   require("./server/routes/fetchSlots.routes")
 );
 app.use("/api/sign", require("./server/routes/sign.routes"));
+app.use("/api/sqs", require("./server/routes/sqs.routes"));
 
 var server;
 if (process.argv.length == 2) {
