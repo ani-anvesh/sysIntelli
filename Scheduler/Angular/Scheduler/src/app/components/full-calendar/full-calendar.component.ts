@@ -192,11 +192,11 @@ export class FullCalendarComponent implements OnInit {
   // }
 
   slotConformation(slot: any) {
-    // console.log({
-    //   ...slot,
-    //   ...this.selectedShift,
-    //   doctorId: this.selectedDoctor,
-    // });
+    console.log({
+      ...slot,
+      ...this.selectedShift,
+      doctorId: this.selectedDoctor,
+    });
     // this.sqsService
     //   .sendMessageToQueue({
     //     ...slot,
@@ -225,11 +225,11 @@ export class FullCalendarComponent implements OnInit {
       rejectLabel: 'No',
       rejectButtonStyleClass: 'p-button-text',
       accept: () => {
-        this.bookAppointments({
-          ...slot,
-          ...this.selectedShift,
-          doctorId: this.selectedDoctor,
-        });
+        // this.bookAppointments({
+        //   ...slot,
+        //   ...this.selectedShift,
+        //   doctorId: this.selectedDoctor,
+        // });
       },
       reject: () => {},
       key: 'slotConfirmDialougeDialog',

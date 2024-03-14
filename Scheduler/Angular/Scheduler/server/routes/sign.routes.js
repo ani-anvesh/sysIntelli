@@ -7,7 +7,7 @@ const { dbConfig } = require("../../utils/db");
 async function fetchUser(email) {
   return new Promise((resolve, reject) => {
     const connection = mysql.createConnection(dbConfig);
-    const query = `SELECT au.email_id, au.password, au.jwttoken FROM patient au WHERE au.email_id = ?`;
+    const query = `SELECT au.email_id, au.password, au.jwttoken, au.patient_id FROM patient au WHERE au.email_id = ?`;
     connection.query(query, [email], (err, results) => {
       if (err) {
         console.error("Error executing query:", err);
@@ -69,6 +69,7 @@ async function signin(req, res) {
     return res.status(200).send({
       email: req.body.email,
       Auth: true,
+      patientId: data[0].patient_id,
     });
   } catch (error) {
     console.log(error);
