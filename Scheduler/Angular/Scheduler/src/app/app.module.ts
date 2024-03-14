@@ -11,6 +11,7 @@ import { ConfirmationService } from 'primeng/api';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { LoginComponent } from './components/login/login.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SqsService } from './services/sqs.service';
 
 @NgModule({
   declarations: [AppComponent, FullCalendarComponent, LoginComponent],
@@ -23,7 +24,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     ConfirmDialogModule,
     BrowserAnimationsModule,
   ],
-  providers: [ApiService, AxiosService, ConfirmationService],
+  providers: [ApiService, AxiosService, ConfirmationService, SqsService],
   bootstrap: [AppComponent],
 })
 export class AppModule {}
