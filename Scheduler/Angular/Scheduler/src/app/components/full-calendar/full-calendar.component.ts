@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import * as moment from 'moment';
 import { ConfirmationService } from 'primeng/api';
 import { ApiService } from 'src/app/services/api.service';
+import { SqsService } from 'src/app/services/sqs.service';
 import { TokenService } from 'src/app/services/token.service';
 import { DOMAINS } from 'utils/domains';
 
@@ -31,7 +32,8 @@ export class FullCalendarComponent implements OnInit {
   constructor(
     private tokenService: TokenService,
     private confirmationService: ConfirmationService,
-    private apiService: ApiService
+    private apiService: ApiService,
+    private sqsService: SqsService
   ) {
     this.monthOptions = this.getMonthsInYear(moment().year());
   }
@@ -70,6 +72,7 @@ export class FullCalendarComponent implements OnInit {
       this.timeMarkers.push(startMoment.format('HH:mm'));
       startMoment.add(1, 'hour');
     }
+    console.log(this.timeMarkers);
   }
 
   getTimelineColumnTemplate(): string {
@@ -100,7 +103,6 @@ export class FullCalendarComponent implements OnInit {
   slotMaker() {
     this.timeSlotData = [];
     const { startTime, endTime } = this.selectedShift;
-    console.log(this.selectedShift);
     this.setTimeMarkers({ startTime: startTime, endTime: endTime });
     this.timeSlotData = _.filter(
       this.totalSlotDate,
@@ -111,7 +113,8 @@ export class FullCalendarComponent implements OnInit {
     this.timeSlotData = _.sortBy(this.timeSlotData, (item) => {
       return moment(item.startTime, 'HH:mm').toDate();
     });
-    this.totalBookedSlots(this.selectedShift);
+
+    this.totalBookedSlots(this.selectedShift, this.timeSlotData);
   }
 
   chunkArray(array: any[], size: number): any[] {
@@ -164,7 +167,49 @@ export class FullCalendarComponent implements OnInit {
     this.totalAvailableShifts();
   }
 
+  // updateAvailableSlots(bookedSlot: any, availableShifts: any) {
+  //   const updatedShifts = _.cloneDeep(availableShifts);
+
+  //   bookedSlot.forEach((slot: { date: any; shiftId: any }) => {
+  //     const shiftIndex = _.findIndex(updatedShifts, { id: slot.date });
+  //     console.log(shiftIndex);
+  //     if (shiftIndex !== -1) {
+  //       console.log(updatedShifts[shiftIndex]);
+
+  //       const shift = updatedShifts[shiftIndex].shifts.find(
+  //         (s: { shiftId: any }) => s.shiftId == slot.shiftId
+  //       );
+  //       console.log(shift);
+
+  //       if (shift) {
+  //         shift.availableSlots--;
+  //         updatedShifts[shiftIndex].slotsAvailable--;
+  //       }
+  //     }
+  //   });
+  //   console.log(updatedShifts);
+  //   return updatedShifts;
+  // }
+
   slotConformation(slot: any) {
+    // console.log({
+    //   ...slot,
+    //   ...this.selectedShift,
+    //   doctorId: this.selectedDoctor,
+    // });
+    // this.sqsService
+    //   .sendMessageToQueue({
+    //     ...slot,
+    //     ...this.selectedShift,
+    //     doctorId: this.selectedDoctor.doctorId,
+    //   })
+    // .subscribe({
+    //   next: (data) => {
+    //   },
+    //   error: (err) => {
+    //     console.log(err.error.message);
+    //   },
+    // });
     this.confirmationService.confirm({
       message:
         'Are you sure you want to book ' +
@@ -179,10 +224,29 @@ export class FullCalendarComponent implements OnInit {
       acceptLabel: 'Yes',
       rejectLabel: 'No',
       rejectButtonStyleClass: 'p-button-text',
-      accept: () => {},
+      accept: () => {
+        this.bookAppointments({
+          ...slot,
+          ...this.selectedShift,
+          doctorId: this.selectedDoctor,
+        });
+      },
       reject: () => {},
       key: 'slotConfirmDialougeDialog',
     });
+  }
+
+  async bookAppointments(body: any): Promise<any> {
+    return await this.apiService
+      .postAllData(DOMAINS.HOME + `bookSlots/${body.doctorId}/book`, body)
+      .then((res: any) => {
+        if (res) {
+          console.log(res);
+        }
+      })
+      .catch((error) => {
+        return console.error('Error fetching receipt names:', error);
+      });
   }
 
   async fetchDoctors(): Promise<any> {
@@ -223,10 +287,23 @@ export class FullCalendarComponent implements OnInit {
               obj.shifts = groupedShifts[obj.id];
             }
           });
+
           this.allDays.forEach((obj: any) => {
             const slotsAvailable = _.sumBy(obj.shifts, 'availableSlots');
             obj.slotsAvailable = slotsAvailable;
           });
+
+          // this.sqsService
+          //   .receiveMessageToQueue(this.selectedDoctor.doctorId)
+          //   .subscribe({
+          //     next: (data) => {
+          //       this.allDays = this.updateAvailableSlots(data, this.allDays);
+          //       console.log(this.allDays);
+          //     },
+          //     error: (err) => {
+          //       console.log(err.error.message);
+          //     },
+          //   });
         }
       })
       .catch((error) => {
@@ -234,7 +311,7 @@ export class FullCalendarComponent implements OnInit {
       });
   }
 
-  async totalBookedSlots(shift: any) {
+  async totalBookedSlots(shift: any, timeSlotDataDump: any) {
     await this.apiService
       .getAllData(
         DOMAINS.HOME +
@@ -247,9 +324,30 @@ export class FullCalendarComponent implements OnInit {
       )
       .then((res: any) => {
         if (res) {
-          this.timeSlotData = _.map(this.timeSlotData, (slot) =>
-            _.merge(slot, _.find(res, { slotName: slot.slotName }))
-          );
+          let timeSlots = _.cloneDeep(timeSlotDataDump);
+          this.sqsService
+            .receiveMessageToQueue(
+              this.selectedDoctor.doctorId,
+              shift.date,
+              shift.shiftId
+            )
+            .subscribe({
+              next: (data) => {
+                data = _.map(data, (slot) => {
+                  let slotTemp = { ...slot, availability: 'tempLock' };
+                  return slotTemp;
+                });
+
+                let responce = [...res, ...data];
+                console.log(responce);
+                this.timeSlotData = _.map(timeSlots, (slot) =>
+                  _.merge(slot, _.find(responce, { slotName: slot.slotName }))
+                );
+              },
+              error: (err) => {
+                console.log(err.error.message);
+              },
+            });
         }
       })
       .catch((error) => {
