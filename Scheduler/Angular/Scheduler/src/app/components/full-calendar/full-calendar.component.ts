@@ -325,29 +325,32 @@ export class FullCalendarComponent implements OnInit {
       .then((res: any) => {
         if (res) {
           let timeSlots = _.cloneDeep(timeSlotDataDump);
-          this.sqsService
-            .receiveMessageToQueue(
-              this.selectedDoctor.doctorId,
-              shift.date,
-              shift.shiftId
-            )
-            .subscribe({
-              next: (data) => {
-                data = _.map(data, (slot) => {
-                  let slotTemp = { ...slot, availability: 'tempLock' };
-                  return slotTemp;
-                });
+          // this.sqsService
+          //   .receiveMessageToQueue(
+          //     this.selectedDoctor.doctorId,
+          //     shift.date,
+          //     shift.shiftId
+          //   )
+          //   .subscribe({
+          //     next: (data) => {
+          //       data = _.map(data, (slot) => {
+          //         let slotTemp = { ...slot, availability: 'tempLock' };
+          //         return slotTemp;
+          //       });
 
-                let responce = [...res, ...data];
-                console.log(responce);
-                this.timeSlotData = _.map(timeSlots, (slot) =>
-                  _.merge(slot, _.find(responce, { slotName: slot.slotName }))
-                );
-              },
-              error: (err) => {
-                console.log(err.error.message);
-              },
-            });
+          //       let responce = [...res, ...data];
+          //       console.log(responce);
+          //       this.timeSlotData = _.map(timeSlots, (slot) =>
+          //         _.merge(slot, _.find(responce, { slotName: slot.slotName }))
+          //       );
+          //     },
+          //     error: (err) => {
+          //       console.log(err.error.message);
+          //     },
+          //   });
+          this.timeSlotData = _.map(timeSlots, (slot) =>
+            _.merge(slot, _.find(res, { slotName: slot.slotName }))
+          );
         }
       })
       .catch((error) => {
