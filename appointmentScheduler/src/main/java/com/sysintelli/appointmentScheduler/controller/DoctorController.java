@@ -10,15 +10,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.sysintelli.appointmentScheduler.configuration.AppointmentRequest;
 import com.sysintelli.appointmentScheduler.configuration.SlotInfo;
 import com.sysintelli.appointmentScheduler.configuration.SlotTimeInfo;
 import com.sysintelli.appointmentScheduler.model.Doctor;
 import com.sysintelli.appointmentScheduler.model.SlotTiming;
+import com.sysintelli.appointmentScheduler.model.TempData;
+import com.sysintelli.appointmentScheduler.service.AppointmentService;
 import com.sysintelli.appointmentScheduler.service.DoctorService;
 import com.sysintelli.appointmentScheduler.service.SlotService;
+import com.sysintelli.appointmentScheduler.service.TempDataService;
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 class DoctorController {
@@ -27,6 +33,12 @@ class DoctorController {
     
     @Autowired
     private SlotService slotService;
+    
+    @Autowired
+    private AppointmentService appointmentService;
+    
+    @Autowired
+    private TempDataService tempDataService;
 
     @GetMapping("/doctorsList")
     public List<Doctor> getAllDoctors() {
@@ -53,4 +65,30 @@ class DoctorController {
             @RequestParam Long shiftId) {
         return slotService.getSlotTimeInfoForDoctor(doctorId, date, shiftId);
     }
+    
+    @PostMapping("/{doctorId}/appointments")
+    public String createAppointment(@PathVariable Long doctorId, @RequestBody AppointmentRequest appointmentRequest) {
+        Long patientId = appointmentRequest.getPatientId();
+        LocalDate date = appointmentRequest.getDate();
+        String dayOfWeek = appointmentRequest.getDayOfWeek();
+        Long shiftId = appointmentRequest.getShiftId();
+        String slotName = appointmentRequest.getSlotName();
+        return appointmentService.setAppointment(doctorId, patientId, date, dayOfWeek, shiftId, slotName);
+    }
+    @PostMapping("/tempData")
+    public String addTempData(@RequestBody TempData tempData) {
+    	Long doctorId = tempData.getDoctorId();
+    	Long patientId = tempData.getPatientId();
+        LocalDate date = tempData.getDate();
+        String dayOfWeek = tempData.getDayOfWeek();
+        Long shiftId = tempData.getShiftId();
+        String slotName = tempData.getSlotName(); 
+        return tempDataService.addTempData(doctorId, patientId, date, dayOfWeek, shiftId, slotName);
+    	
+    }
+    @GetMapping("/tempDataList")
+    public List<TempData> getAllTempData() {
+        return tempDataService.getAllTempData();
+    }
+    
 }
