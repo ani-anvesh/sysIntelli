@@ -72,7 +72,6 @@ export class FullCalendarComponent implements OnInit {
       this.timeMarkers.push(startMoment.format('HH:mm'));
       startMoment.add(1, 'hour');
     }
-    console.log(this.timeMarkers);
   }
 
   getTimelineColumnTemplate(): string {
@@ -191,40 +190,75 @@ export class FullCalendarComponent implements OnInit {
   //   return updatedShifts;
   // }
 
-  slotConformation(slot: any) {
-    console.log({
+  async slotConformation(slot: any) {
+    let selectedSlot = {
       ...slot,
       ...this.selectedShift,
       patientId: this.tokenService.getUser().patientId,
       dayOfWeek: this.selectedDay,
-      doctorId: this.selectedDoctor,
-    });
-    this.confirmationService.confirm({
-      message:
-        'Are you sure you want to book ' +
-        slot.startTime +
-        ' to ' +
-        slot.endTime +
-        ' slot?',
-      header: 'Confimation',
-      icon: 'pi pi-exclamation-triangle',
-      acceptIcon: 'none',
-      rejectIcon: 'none',
-      acceptLabel: 'Yes',
-      rejectLabel: 'No',
-      rejectButtonStyleClass: 'p-button-text',
-      accept: () => {
-        this.bookAppointments({
-          ...slot,
-          ...this.selectedShift,
-          patientId: this.tokenService.getUser().patientId,
-          dayOfWeek: this.selectedDay,
-          doctorId: this.selectedDoctor.doctorId,
+      doctorId: this.selectedDoctor.doctorId,
+    };
+    console.log(selectedSlot);
+
+    let slotsRes = await this.receiveMessage(
+      this.selectedDoctor.doctorId,
+      this.selectedShift.date,
+      this.selectedShift.shiftId
+    );
+    console.log(slotsRes);
+    if (slotsRes) {
+      const isPresent = _.some(slotsRes, (item) =>
+        _.isEqual(
+          _.mapValues(
+            _.pick(item, ['doctorId', 'date', 'shiftId', 'slotName']),
+            String
+          ),
+          _.mapValues(
+            _.pick(selectedSlot, ['doctorId', 'date', 'shiftId', 'slotName']),
+            String
+          )
+        )
+      );
+      if (isPresent) {
+        this.confirmationService.confirm({
+          message: 'Please select a different slot',
+          header: 'Disclaimer',
+          icon: 'pi pi-exclamation-triangle',
+          rejectIcon: 'none',
+          rejectLabel: 'Ok',
+          acceptVisible: false,
+          rejectButtonStyleClass: 'p-button-text',
+          key: 'slotConfirmDialougeDialog',
+          reject: () => {
+            this.totalBookedSlots(this.selectedShift, this.timeSlotData);
+          },
         });
-      },
-      reject: () => {},
-      key: 'slotConfirmDialougeDialog',
-    });
+      } else {
+        this.sendMessage(selectedSlot);
+        this.confirmationService.confirm({
+          message:
+            'Are you sure you want to book ' +
+            slot.startTime +
+            ' to ' +
+            slot.endTime +
+            ' slot?',
+          header: 'Confimation',
+          icon: 'pi pi-exclamation-triangle',
+          acceptIcon: 'none',
+          rejectIcon: 'none',
+          acceptLabel: 'Yes',
+          rejectLabel: 'No',
+          rejectButtonStyleClass: 'p-button-text',
+          accept: () => {
+            this.bookAppointments(selectedSlot);
+          },
+          reject: () => {
+            this.totalBookedSlots(this.selectedShift, this.timeSlotData);
+          },
+          key: 'slotConfirmDialougeDialog',
+        });
+      }
+    }
   }
 
   async bookAppointments(body: any): Promise<any> {
@@ -232,7 +266,6 @@ export class FullCalendarComponent implements OnInit {
       .postAllData(DOMAINS.HOME + `bookSlots/${body.doctorId}/book`, body)
       .then((res: any) => {
         if (res) {
-          console.log(res);
           this.totalAvailableShifts();
           this.totalBookedSlots(this.selectedShift, this.timeSlotData);
         }
@@ -285,8 +318,6 @@ export class FullCalendarComponent implements OnInit {
             const slotsAvailable = _.sumBy(obj.shifts, 'availableSlots');
             obj.slotsAvailable = slotsAvailable;
           });
-
-          console.log(this.allDays);
         }
       })
       .catch((error) => {
@@ -308,26 +339,49 @@ export class FullCalendarComponent implements OnInit {
       .then(async (res: any) => {
         if (res) {
           let timeSlots = _.cloneDeep(timeSlotDataDump);
-          let slotsRes = await this.receiveMessage();
+          let slotsRes = await this.receiveMessage(
+            this.selectedDoctor.doctorId,
+            shift.date,
+            shift.shiftId
+          );
           if (slotsRes) {
             console.log(slotsRes);
-            // _.map(slotsRes, (slot) => {
-            //   let slotTemp = { ...slot, availability: 'tempLock' };
-            //   return slotTemp;
-            // });
-            // let responce = [...timeSlots, ...slotsRes];
-            // console.log(responce);
-            // this.timeSlotData = _.map(timeSlots, (slot) =>
-            //   _.merge(slot, _.find(responce, { slotName: slot.slotName }))
-            // );
+            let tempSlots = _.map(slotsRes, (slot: any) => {
+              let slotTemp = { ...slot, availability: 'tempLock' };
+              return slotTemp;
+            });
+            console.log(tempSlots);
+
+            this.timeSlotData = _.map(timeSlots, (slot) => {
+              const matchingSlot = _.find(tempSlots, {
+                slotName: slot.slotName,
+              });
+              return matchingSlot ? _.merge(slot, matchingSlot) : slot;
+            });
+
+            console.log(this.timeSlotData);
           }
         }
       });
   }
 
-  async receiveMessage() {
+  async receiveMessage(doctorId: any, date: any, shiftId: any) {
     return await this.apiService
-      .getAllData(DOMAINS.HOME + 'tempLockSlots/receive-message')
+      .getAllData(
+        DOMAINS.HOME +
+          `tempLockSlots/receive-message?doctorId=${doctorId}&date=${date}&shiftId=${shiftId}`
+      )
+      .then((res) => {
+        return res;
+      })
+      .catch((error) => {
+        return console.error('Error fetching receipt names:', error);
+      });
+  }
+
+  async sendMessage(body: any) {
+    return await this.apiService
+      .postAllData(DOMAINS.HOME + 'tempLockSlots/send-message', body)
       .then((res) => {
         return res;
       })
