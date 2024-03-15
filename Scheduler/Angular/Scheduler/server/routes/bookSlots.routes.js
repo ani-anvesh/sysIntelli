@@ -1,3 +1,5 @@
+const instance = require("../services/axiosService");
+
 const router = require("express").Router();
 
 SLOT_BOOKING_ROUTE = "/appointments";
@@ -7,7 +9,7 @@ router.post("/:doctorId/book", async (req, res) => {
 
   try {
     instance
-      .post(req.params.doctorId + "/" + SLOT_BOOKING_ROUTE, body)
+      .post(req.params.doctorId + SLOT_BOOKING_ROUTE, body)
       .then((response) => {
         res.send(response.data);
       })
