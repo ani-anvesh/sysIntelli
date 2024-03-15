@@ -99,8 +99,12 @@ app.use(
   authRestrictionService.verifyToken,
   require("./server/routes/bookSlots.routes")
 );
+app.use(
+  "/api/tempLockSlots",
+  authRestrictionService.verifyToken,
+  require("./server/routes/tempLockSlots.routes")
+);
 app.use("/api/sign", require("./server/routes/sign.routes"));
-// app.use("/api/sqs", require("./server/routes/sqs.routes"));
 
 var server;
 if (process.argv.length == 2) {
