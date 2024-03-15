@@ -1,3 +1,5 @@
+const instance = require("../services/axiosService");
+
 const router = require("express").Router();
 SLOT_LOCKING_ROUTE = "/tempData";
 SLOT_RECEIVING_ROUTE = "/tempDataList";
@@ -24,17 +26,25 @@ router.get("/receive-message", async (req, res) => {
     instance
       .get(SLOT_RECEIVING_ROUTE)
       .then((response) => {
-        const messagesWithDoctorId = response.reduce((accumulator, message) => {
-          if (
-            message.doctorId == req.query.doctorId &&
-            message.date == req.query.date &&
-            message.shiftId == req.query.shiftId
-          ) {
-            accumulator.push(message);
-          }
-          return accumulator;
-        }, []);
-        res.json(messagesWithDoctorId);
+        console.log(response);
+        if (response && response.data) {
+          let messagesWithDoctorId = response.data.reduce(
+            (accumulator, message) => {
+              console.log(message);
+              if (
+                message.doctorId == req.query.doctorId &&
+                message.date == req.query.date &&
+                message.shiftId == req.query.shiftId
+              ) {
+                accumulator.push(message);
+              }
+              return accumulator;
+            },
+            []
+          );
+          console.log(messagesWithDoctorId);
+          res.json(messagesWithDoctorId);
+        }
       })
       .catch((error) => {
         console.error(error);
