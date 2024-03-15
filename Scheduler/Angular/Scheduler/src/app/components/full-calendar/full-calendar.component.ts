@@ -195,21 +195,10 @@ export class FullCalendarComponent implements OnInit {
     console.log({
       ...slot,
       ...this.selectedShift,
+      patientId: this.tokenService.getUser().patientId,
+      dayOfWeek: this.selectedDay,
       doctorId: this.selectedDoctor,
     });
-    // this.sqsService
-    //   .sendMessageToQueue({
-    //     ...slot,
-    //     ...this.selectedShift,
-    //     doctorId: this.selectedDoctor.doctorId,
-    //   })
-    // .subscribe({
-    //   next: (data) => {
-    //   },
-    //   error: (err) => {
-    //     console.log(err.error.message);
-    //   },
-    // });
     this.confirmationService.confirm({
       message:
         'Are you sure you want to book ' +
@@ -225,11 +214,13 @@ export class FullCalendarComponent implements OnInit {
       rejectLabel: 'No',
       rejectButtonStyleClass: 'p-button-text',
       accept: () => {
-        // this.bookAppointments({
-        //   ...slot,
-        //   ...this.selectedShift,
-        //   doctorId: this.selectedDoctor,
-        // });
+        this.bookAppointments({
+          ...slot,
+          ...this.selectedShift,
+          patientId: this.tokenService.getUser().patientId,
+          dayOfWeek: this.selectedDay,
+          doctorId: this.selectedDoctor.doctorId,
+        });
       },
       reject: () => {},
       key: 'slotConfirmDialougeDialog',
@@ -242,6 +233,8 @@ export class FullCalendarComponent implements OnInit {
       .then((res: any) => {
         if (res) {
           console.log(res);
+          this.totalAvailableShifts();
+          this.totalBookedSlots(this.selectedShift, this.timeSlotData);
         }
       })
       .catch((error) => {
@@ -293,17 +286,7 @@ export class FullCalendarComponent implements OnInit {
             obj.slotsAvailable = slotsAvailable;
           });
 
-          // this.sqsService
-          //   .receiveMessageToQueue(this.selectedDoctor.doctorId)
-          //   .subscribe({
-          //     next: (data) => {
-          //       this.allDays = this.updateAvailableSlots(data, this.allDays);
-          //       console.log(this.allDays);
-          //     },
-          //     error: (err) => {
-          //       console.log(err.error.message);
-          //     },
-          //   });
+          console.log(this.allDays);
         }
       })
       .catch((error) => {
@@ -322,36 +305,31 @@ export class FullCalendarComponent implements OnInit {
           '&shiftId=' +
           shift.shiftId
       )
-      .then((res: any) => {
+      .then(async (res: any) => {
         if (res) {
           let timeSlots = _.cloneDeep(timeSlotDataDump);
-          // this.sqsService
-          //   .receiveMessageToQueue(
-          //     this.selectedDoctor.doctorId,
-          //     shift.date,
-          //     shift.shiftId
-          //   )
-          //   .subscribe({
-          //     next: (data) => {
-          //       data = _.map(data, (slot) => {
-          //         let slotTemp = { ...slot, availability: 'tempLock' };
-          //         return slotTemp;
-          //       });
-
-          //       let responce = [...res, ...data];
-          //       console.log(responce);
-          //       this.timeSlotData = _.map(timeSlots, (slot) =>
-          //         _.merge(slot, _.find(responce, { slotName: slot.slotName }))
-          //       );
-          //     },
-          //     error: (err) => {
-          //       console.log(err.error.message);
-          //     },
-          //   });
-          this.timeSlotData = _.map(timeSlots, (slot) =>
-            _.merge(slot, _.find(res, { slotName: slot.slotName }))
-          );
+          let slotsRes = await this.receiveMessage();
+          if (slotsRes) {
+            console.log(slotsRes);
+            // _.map(slotsRes, (slot) => {
+            //   let slotTemp = { ...slot, availability: 'tempLock' };
+            //   return slotTemp;
+            // });
+            // let responce = [...timeSlots, ...slotsRes];
+            // console.log(responce);
+            // this.timeSlotData = _.map(timeSlots, (slot) =>
+            //   _.merge(slot, _.find(responce, { slotName: slot.slotName }))
+            // );
+          }
         }
+      });
+  }
+
+  async receiveMessage() {
+    return await this.apiService
+      .getAllData(DOMAINS.HOME + 'tempLockSlots/receive-message')
+      .then((res) => {
+        return res;
       })
       .catch((error) => {
         return console.error('Error fetching receipt names:', error);
